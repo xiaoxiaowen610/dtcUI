@@ -16,10 +16,11 @@
     "test:ui": "vitest run apps/studio",
     "test:integration": "vitest run scripts",
     "test:coverage": "vitest run --coverage",
+    "evals": "node --import tsx scripts/run-evals.ts",
     "build": "pnpm typecheck && pnpm --filter @forge-ui/engine build && pnpm --filter @forge-ui/studio build",
     "generate:flagship": "node --import tsx scripts/generate-flagship.ts",
     "validate:flagship": "node --import tsx scripts/validate-flagship.ts",
-    "check": "pnpm typecheck && pnpm test && pnpm build && pnpm validate:flagship"
+    "check": "pnpm typecheck && pnpm test && pnpm build && pnpm validate:flagship && pnpm evals"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "7.0.0",

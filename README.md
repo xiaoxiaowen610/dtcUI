@@ -19,6 +19,7 @@ The repository currently targets the Phase 1 vertical slice defined by the PRD a
 - localhost Fastify Engine with health, analyze, and generate endpoints;
 - React Studio for running and inspecting the flagship pipeline;
 - repeatable tests, type checking, workspace builds, and a real Vite build of generated output.
+- fixed valid/degraded/invalid evaluations and a pinned GitHub Actions quality gate.
 
 Token conflict resolution, semantic scoring, AI Patch, version history, sandboxed preview, ZIP export,
 Playwright layout assertions, and visual baselines remain later roadmap phases. They are not claimed as
@@ -68,12 +69,16 @@ pnpm test:unit
 pnpm test:api
 pnpm test:ui
 pnpm test:coverage
+pnpm evals
 ```
 
 See the [test strategy](./docs/testing/TEST-STRATEGY.md),
 [traceable test cases](./docs/testing/TEST-CASES.md), and
 [latest execution report](./docs/testing/TEST-REPORT.md). Browser screenshot and layout baselines
 remain an explicit Phase 4 gate and are not counted as passed in Phase 1.
+
+The [batch execution plan](./docs/batches/README.md) defines the stacked branch order, task IDs,
+test cases, and acceptance gate for every remaining MVP increment.
 
 Or run checks separately:
 

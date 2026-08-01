@@ -31,7 +31,9 @@ Automated in this phase:
 - Studio initial, pending, success, error, request ID, retry, accessible selection, preview, code,
   file-selection, and device interactions;
 - generated TypeScript and real Vite production build;
-- Engine and Studio production builds.
+- Engine and Studio production builds;
+- fixed valid/degraded/invalid evaluations with deterministic machine-readable reports;
+- pinned GitHub Actions execution and quality evidence upload.
 
 Explicitly out of the Phase 1 pass rate:
 
@@ -45,15 +47,16 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 
 ## 3. Test layers
 
-| Layer       | Purpose                                      | Tool                    | Gate         |
-| ----------- | -------------------------------------------- | ----------------------- | ------------ |
-| Unit        | Pure functions, schemas, guards, serializers | Vitest                  | Every change |
-| Business    | IR -> Registry -> Plan -> Codegen behavior   | Vitest                  | Every change |
-| API         | Fastify request/response/error/CORS contract | Fastify inject + Vitest | Every change |
-| UI          | User-visible Studio states and interactions  | Testing Library + jsdom | Every change |
-| Integration | Flagship end-to-end in process               | Vitest                  | Every change |
-| Build       | Generated TypeScript and production bundles  | TypeScript + Vite       | Every change |
-| Visual E2E  | Fixed browser screenshots/layout             | Playwright              | Phase 4 only |
+| Layer       | Purpose                                       | Tool                    | Gate         |
+| ----------- | --------------------------------------------- | ----------------------- | ------------ |
+| Unit        | Pure functions, schemas, guards, serializers  | Vitest                  | Every change |
+| Business    | IR -> Registry -> Plan -> Codegen behavior    | Vitest                  | Every change |
+| API         | Fastify request/response/error/CORS contract  | Fastify inject + Vitest | Every change |
+| UI          | User-visible Studio states and interactions   | Testing Library + jsdom | Every change |
+| Integration | Flagship end-to-end in process                | Vitest                  | Every change |
+| Build       | Generated TypeScript and production bundles   | TypeScript + Vite       | Every change |
+| Visual E2E  | Fixed browser screenshots/layout              | Playwright              | Phase 4 only |
+| Eval        | Fixed valid/degraded/invalid expected results | Node + Vitest           | Every change |
 
 ## 4. Prioritization
 
@@ -66,7 +69,8 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 ## 5. Test data
 
 - Primary valid fixture: `presets/saas/input.json` + `presets/saas/registry.json`.
-- Expected match fixture: `evals/flagship-saas/expected.json`.
+- Executable fixed suite: `evals/cases.ts`, derived from the canonical preset without duplicated JSON drift.
+- Legacy flagship expectation: `evals/flagship-saas/expected.json`.
 - Invalid data is derived per test and never written into production presets.
 - Time-dependent generation receives a fixed `createdAt` value.
 - Generated file order, imports, props, tokens, and JSON are asserted as stable.
@@ -81,7 +85,8 @@ A change is releasable only when all are true:
 4. Engine and Studio production builds pass.
 5. Generated flagship TypeScript and Vite build pass.
 6. `git diff --check` and secret-pattern scan pass.
-7. Skipped runtime/visual checks remain explicitly reported as skipped.
+7. `pnpm evals` reports every fixed case passed and writes deterministic JSON evidence.
+8. Skipped runtime/visual checks remain explicitly reported as skipped.
 
 ## 7. Commands
 
@@ -90,6 +95,7 @@ pnpm test:unit
 pnpm test:api
 pnpm test:ui
 pnpm test:coverage
+pnpm evals
 pnpm check
 ```
 

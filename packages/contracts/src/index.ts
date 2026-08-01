@@ -384,3 +384,55 @@ export interface ForgeErrorPayload {
   suggestedActions: string[]
   requestId: string
 }
+
+export const evalKindSchema = z.enum(['valid', 'invalid', 'degraded'])
+
+export const evalExpectedSchema = z.object({
+  errorCode: z.string().min(1).optional(),
+  generationSuccess: z.boolean().optional(),
+  expectedMatches: z.record(z.string(), z.string().min(1)).optional(),
+  expectedStrategies: z
+    .record(
+      z.string(),
+      z.enum([
+        'exact-component',
+        'adapted-component',
+        'registered-recipe',
+        'native-element',
+        'manual-review'
+      ])
+    )
+    .optional(),
+  expectedDiagnostics: z.array(z.string().min(1)).optional()
+})
+
+export const evalCaseSchema = z
+  .object({
+    id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+    name: z.string().min(1),
+    kind: evalKindSchema,
+    input: z.unknown(),
+    registry: z.unknown(),
+    expected: evalExpectedSchema
+  })
+  .superRefine((value, context) => {
+    if (value.kind === 'invalid' && !value.expected.errorCode) {
+      context.addIssue({
+        code: 'custom',
+        path: ['expected', 'errorCode'],
+        message: 'Invalid eval cases must declare an expected errorCode.'
+      })
+    }
+
+    if (value.kind !== 'invalid' && value.expected.errorCode) {
+      context.addIssue({
+        code: 'custom',
+        path: ['expected', 'errorCode'],
+        message: 'Only invalid eval cases may declare an expected errorCode.'
+      })
+    }
+  })
+
+export type EvalKind = z.infer<typeof evalKindSchema>
+export type EvalExpected = z.infer<typeof evalExpectedSchema>
+export type EvalCase = z.infer<typeof evalCaseSchema>

@@ -31,7 +31,8 @@ export default defineConfig({
       include: [
         'packages/*/src/index.ts',
         'apps/engine/src/{pipeline,server}.ts',
-        'apps/studio/src/{App,services/engine,stores/workspace}.{ts,tsx}'
+        'apps/studio/src/{App,services/engine,stores/workspace}.{ts,tsx}',
+        'scripts/lib/evaluation.ts'
       ],
       exclude: ['packages/example-external-ui/**'],
       thresholds: {
