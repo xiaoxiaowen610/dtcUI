@@ -36,8 +36,8 @@ export function createGenerationPlan(
   registry: ComponentRegistryManifest,
   matches: ComponentMatchResult[]
 ): GenerationPlan {
-  const hero = findNodeBySemantic(document.root, 'hero')
-  if (!hero) {
+  const heroes = walkDesignNodes(document.root).filter((node) => node.semantic === 'hero')
+  if (heroes.length === 0) {
     throw new GenerationPlanError([
       {
         code: 'HERO_SECTION_REQUIRED',
@@ -50,12 +50,27 @@ export function createGenerationPlan(
     ])
   }
 
+  if (heroes.length > 1) {
+    throw new GenerationPlanError([
+      {
+        code: 'HERO_SECTION_AMBIGUOUS',
+        stage: 'generation-plan',
+        severity: 'error',
+        message: 'Phase 1 requires exactly one section with semantic "hero".',
+        blocking: true,
+        suggestedActions: ['Keep one Hero section and rename the remaining semantics.']
+      }
+    ])
+  }
+
+  const hero = heroes[0]!
+
   const heroNodeIds = new Set(walkDesignNodes(hero).map((node) => node.id))
   const exactMatches = matches.filter(
     (match) => match.strategy === 'exact-component' && heroNodeIds.has(match.nodeId)
   )
   const nodeById = new Map(walkDesignNodes(hero).map((node) => [node.id, node]))
-  const imports = new Map<string, Set<string>>()
+  const imports = new Map<string, { defaultName?: string; names: Set<string> }>()
   const actions: HeroActionPlan[] = []
   let visual: GenerationPlan['hero']['visual']
 
@@ -64,9 +79,13 @@ export function createGenerationPlan(
     const node = nodeById.get(match.nodeId)
     if (!component || !node) continue
 
-    const names = imports.get(component.import.path) ?? new Set<string>()
-    names.add(component.import.exportName)
-    imports.set(component.import.path, names)
+    const importEntry = imports.get(component.import.path) ?? { names: new Set<string>() }
+    if (component.import.style === 'default') {
+      importEntry.defaultName = component.import.exportName
+    } else {
+      importEntry.names.add(component.import.exportName)
+    }
+    imports.set(component.import.path, importEntry)
 
     if (component.capabilities.includes('action')) {
       actions.push({
@@ -123,7 +142,11 @@ export function createGenerationPlan(
     },
     imports: [...imports.entries()]
       .sort(([left], [right]) => left.localeCompare(right))
-      .map(([path, names]) => ({ path, names: [...names].sort() })),
+      .map(([path, entry]) => ({
+        path,
+        ...(entry.defaultName ? { defaultName: entry.defaultName } : {}),
+        names: [...entry.names].sort()
+      })),
     hero: {
       id: hero.id,
       eyebrow: textForSemantic(hero, 'hero-eyebrow'),

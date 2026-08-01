@@ -65,7 +65,10 @@ function element(
 function buildHeroProgram(plan: GenerationPlan): t.File {
   const registryImports = plan.imports.map((entry) =>
     t.importDeclaration(
-      entry.names.map((name) => t.importSpecifier(t.identifier(name), t.identifier(name))),
+      [
+        ...(entry.defaultName ? [t.importDefaultSpecifier(t.identifier(entry.defaultName))] : []),
+        ...entry.names.map((name) => t.importSpecifier(t.identifier(name), t.identifier(name)))
+      ],
       t.stringLiteral(entry.path)
     )
   )

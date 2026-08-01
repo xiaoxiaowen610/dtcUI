@@ -11,9 +11,9 @@ beforeEach(() => {
   inputFixture = structuredClone(input)
 })
 
-function planFor(candidate: unknown = inputFixture) {
+function planFor(candidate: unknown = inputFixture, registryCandidate: unknown = registryInput) {
   const document = createDesignDocument(candidate)
-  const registry = validateRegistry(registryInput)
+  const registry = validateRegistry(registryCandidate)
   return createGenerationPlan(document, registry, matchComponents(document, registry))
 }
 
@@ -82,5 +82,30 @@ describe('Generation Plan business rules', () => {
 
   it('BL-PLAN-006 derives stable source and generation hashes', () => {
     expect(planFor()).toEqual(planFor())
+  })
+
+  it('BL-PLAN-007 rejects ambiguous documents with multiple Hero sections', () => {
+    ;(inputFixture.root.children as unknown[]).push({
+      id: 'hero-copy',
+      name: 'Second Hero',
+      type: 'section',
+      semantic: 'hero',
+      children: []
+    })
+
+    expect(() => planFor()).toThrowError(/exactly one section with semantic "hero"/)
+  })
+
+  it('BL-PLAN-008 preserves mixed default and named Registry import styles', () => {
+    const registryFixture = structuredClone(registryInput)
+    registryFixture.components[1]!.import.style = 'default'
+
+    expect(planFor(inputFixture, registryFixture).imports).toEqual([
+      {
+        path: '@forge-ui/example-external-ui',
+        defaultName: 'ProductPreview',
+        names: ['Button']
+      }
+    ])
   })
 })

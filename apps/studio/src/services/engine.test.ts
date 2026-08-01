@@ -96,4 +96,29 @@ describe('Studio Engine client', () => {
       status: 500
     })
   })
+
+  it('UI-014 rejects a structured error whose request ID has the wrong type', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 'INTERNAL_ERROR',
+            message: 'Failed.',
+            requestId: 42
+          }),
+          {
+            status: 500,
+            headers: { 'Content-Type': 'application/json', 'x-request-id': 'header-request-id' }
+          }
+        )
+      )
+    )
+
+    await expect(generateFlagship(request)).rejects.toMatchObject({
+      code: 'ENGINE_REQUEST_FAILED',
+      requestId: 'header-request-id',
+      status: 500
+    })
+  })
 })

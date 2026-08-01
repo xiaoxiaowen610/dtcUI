@@ -9,7 +9,16 @@ const pipelineStages = ['Import', 'Design IR', 'Map', 'Generate', 'Validate'] as
 const codeLanguages = new Set<GeneratedFile['language']>(['tsx', 'typescript', 'css', 'json'])
 
 function Icon({ children }: { children: string }) {
-  return <span className="icon">{children}</span>
+  return (
+    <span aria-hidden="true" className="icon">
+      {children}
+    </span>
+  )
+}
+
+function requestIdFor(error: unknown): string | undefined {
+  if (!error || typeof error !== 'object' || !('requestId' in error)) return undefined
+  return typeof error.requestId === 'string' ? error.requestId : undefined
 }
 
 function StatusDot({ active, complete }: { active: boolean; complete: boolean }) {
@@ -117,6 +126,7 @@ function CodeView({ files }: { files: GeneratedFile[] }) {
       <nav className="codeFiles" aria-label="Generated files">
         {codeFiles.map((file) => (
           <button
+            aria-pressed={file.path === selected?.path}
             className={file.path === selected?.path ? 'isSelected' : ''}
             key={file.path}
             onClick={() => setSelectedFile(file.path)}
@@ -229,6 +239,7 @@ export default function App() {
   const generation = useMutation({ mutationFn: () => generateFlagship(flagshipRequest) })
   const completedStage = generation.data ? 5 : generation.isPending ? 3 : 0
   const diagnostics = useMemo(() => generation.data?.project.diagnostics ?? [], [generation.data])
+  const generationRequestId = requestIdFor(generation.error)
 
   return (
     <div className="appShell">
@@ -310,6 +321,7 @@ export default function App() {
           <div className="segmented">
             {(['preview', 'code'] as WorkspaceTab[]).map((tab) => (
               <button
+                aria-pressed={activeTab === tab}
                 className={activeTab === tab ? 'isSelected' : ''}
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -323,6 +335,7 @@ export default function App() {
             {(['desktop', 'tablet', 'mobile'] as Device[]).map((value) => (
               <button
                 aria-label={value}
+                aria-pressed={device === value}
                 className={device === value ? 'isSelected' : ''}
                 key={value}
                 onClick={() => setDevice(value)}
@@ -338,10 +351,19 @@ export default function App() {
         </div>
         <div className="workspaceBody">
           {generation.error ? (
-            <div className="errorState">
+            <div className="errorState" role="alert">
               <Icon>!</Icon>
               <h2>Generation failed</h2>
               <p>{generation.error.message}</p>
+              {generationRequestId ? <small>Request ID: {generationRequestId}</small> : null}
+              <button
+                className="primaryButton"
+                disabled={generation.isPending}
+                onClick={() => generation.mutate()}
+                type="button"
+              >
+                Retry generation
+              </button>
             </div>
           ) : !generation.data ? (
             <Welcome onGenerate={() => generation.mutate()} pending={generation.isPending} />

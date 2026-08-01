@@ -49,7 +49,8 @@ describe('ForgeUI Studio', () => {
 
     expect(screen.getByText('Pulse AI')).toBeInTheDocument()
     expect(screen.getByRole('navigation', { name: 'Generation pipeline' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Generate flagship/ })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Generate flagship' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Preview' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByText('Awaiting input')).toBeInTheDocument()
     expect(screen.getByText('No generation')).toBeInTheDocument()
   })
@@ -80,7 +81,11 @@ describe('ForgeUI Studio', () => {
   })
 
   it('UI-004 renders the Engine error without losing its diagnostic message', async () => {
-    generateMock.mockRejectedValue(new Error('REGISTRY_INVALID: Registry is unsafe.'))
+    generateMock.mockRejectedValue(
+      Object.assign(new Error('REGISTRY_INVALID: Registry is unsafe.'), {
+        requestId: 'request-ui-4'
+      })
+    )
     const user = userEvent.setup()
     renderApp()
 
@@ -88,6 +93,8 @@ describe('ForgeUI Studio', () => {
 
     expect(await screen.findByRole('heading', { name: 'Generation failed' })).toBeVisible()
     expect(screen.getByText('REGISTRY_INVALID: Registry is unsafe.')).toBeInTheDocument()
+    expect(screen.getByText('Request ID: request-ui-4')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retry generation' })).toBeEnabled()
   })
 
   it('UI-005 opens generated code and defaults to Hero TSX', async () => {
@@ -111,9 +118,13 @@ describe('ForgeUI Studio', () => {
     await screen.findByRole('heading', { name: generated.plan.hero.title })
     await user.click(screen.getByRole('button', { name: 'Generated code' }))
 
-    await user.click(screen.getByRole('button', { name: /src\/tokens\.css$/ }))
+    await user.click(screen.getByRole('button', { name: 'src/tokens.css' }))
 
     expect(screen.getByText(/--color-brand-primary: #7c5cff/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'src/tokens.css' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
   })
 
   it('UI-007 switches preview state from desktop to tablet and mobile', async () => {
@@ -131,5 +142,34 @@ describe('ForgeUI Studio', () => {
     await waitFor(() =>
       expect(container.querySelector('.previewFrame')).toHaveClass('previewFrame--mobile')
     )
+    expect(screen.getByRole('button', { name: 'mobile' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('UI-012 retries a failed generation and recovers to the preview', async () => {
+    generateMock
+      .mockRejectedValueOnce(new Error('NETWORK_ERROR: Engine unavailable.'))
+      .mockResolvedValueOnce(generated)
+    const user = userEvent.setup()
+    renderApp()
+
+    await user.click(screen.getByRole('button', { name: 'Generate flagship' }))
+    await screen.findByRole('heading', { name: 'Generation failed' })
+    await user.click(screen.getByRole('button', { name: 'Retry generation' }))
+
+    expect(await screen.findByRole('heading', { name: generated.plan.hero.title })).toBeVisible()
+    expect(generateMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('UI-013 exposes clean accessible names and pressed selection state', () => {
+    renderApp()
+
+    expect(screen.getByRole('button', { name: 'Generate flagship' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Run pipeline' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Preview' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Generated code' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
+    expect(screen.getByRole('button', { name: 'desktop' })).toHaveAttribute('aria-pressed', 'true')
   })
 })

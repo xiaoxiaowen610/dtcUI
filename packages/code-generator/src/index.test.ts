@@ -157,4 +157,34 @@ describe('generateProject', () => {
       validation: { schema: 'passed', runtime: 'skipped', visual: 'skipped' }
     })
   })
+
+  it('UT-CODEGEN-009 emits mixed default and named imports from the Generation Plan', () => {
+    const project = generateProject(
+      {
+        ...plan,
+        imports: [
+          {
+            path: '@forge-ui/example-external-ui',
+            defaultName: 'ProductPreview',
+            names: ['Button']
+          }
+        ],
+        hero: {
+          ...plan.hero,
+          visual: {
+            nodeId: 'visual',
+            exportName: 'ProductPreview',
+            importPath: '@forge-ui/example-external-ui'
+          }
+        }
+      } as GenerationPlan,
+      registry,
+      options
+    )
+    const hero = project.files.find((generatedFile) => generatedFile.path.endsWith('Hero.tsx'))!
+
+    expect(hero.content).toContain(
+      'import ProductPreview, { Button } from "@forge-ui/example-external-ui";'
+    )
+  })
 })

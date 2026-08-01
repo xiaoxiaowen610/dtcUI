@@ -15,7 +15,11 @@ export class EngineRequestError extends Error {
 function isForgeErrorPayload(value: unknown): value is ForgeErrorPayload {
   if (!value || typeof value !== 'object') return false
   const candidate = value as Partial<ForgeErrorPayload>
-  return typeof candidate.code === 'string' && typeof candidate.message === 'string'
+  return (
+    typeof candidate.code === 'string' &&
+    typeof candidate.message === 'string' &&
+    typeof candidate.requestId === 'string'
+  )
 }
 
 async function requestError(response: Response): Promise<EngineRequestError> {

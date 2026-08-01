@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { INPUT_LIMITS } from '@forge-ui/contracts'
 import type { FastifyInstance } from 'fastify'
 import input from '../../../presets/saas/input.json'
 import registry from '../../../presets/saas/registry.json'
@@ -130,6 +131,22 @@ describe('Engine HTTP API', () => {
 
     expect(allowed.headers['access-control-allow-origin']).toBe('http://localhost:5173')
     expect(unknown.headers['access-control-allow-origin']).toBeUndefined()
+  })
+
+  it('API-009 rejects request bodies beyond the shared byte limit', async () => {
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/analyze',
+      payload: {
+        input: {
+          ...inputFixture,
+          metadata: { padding: 'x'.repeat(INPUT_LIMITS.maxBytes) }
+        },
+        registry: registryFixture
+      }
+    })
+
+    expect(response.statusCode).toBe(413)
   })
 })
 

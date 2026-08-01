@@ -858,6 +858,15 @@ button:focus-visible {
   margin: 16px 0 0;
   color: var(--text);
 }
+.errorState small {
+  margin-top: 4px;
+  font-family: ui-monospace, monospace;
+}
+.errorState .primaryButton {
+  min-height: 34px;
+  margin-top: 14px;
+  padding: 0 16px;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,

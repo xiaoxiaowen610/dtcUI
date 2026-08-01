@@ -24,11 +24,12 @@ Automated in this phase:
 
 - pure utility and runtime-schema unit tests;
 - Design IR normalization, limits, ordering, and lookup;
-- Registry validation, exact match, prop compatibility, and manual-review degradation;
-- Generation Plan success, failure, import, action, visual, and diagnostic behavior;
+- Registry validation, safe identifiers, named/default imports, prop compatibility, and manual-review degradation;
+- Generation Plan success, Hero uniqueness, failure, import, action, visual, and diagnostic behavior;
 - generated-file determinism, escaping, ordering, token boundaries, and manifest/report behavior;
-- Engine business pipeline and Fastify API contract tests;
-- Studio initial, pending, success, error, preview, code, file-selection, and device interactions;
+- Engine business pipeline, shared body limit, and Fastify API contract tests;
+- Studio initial, pending, success, error, request ID, retry, accessible selection, preview, code,
+  file-selection, and device interactions;
 - generated TypeScript and real Vite production build;
 - Engine and Studio production builds.
 
@@ -56,8 +57,9 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 
 ## 4. Prioritization
 
-- P0: security boundary, deterministic output, schema/limit rejection, exact matching, generation,
-  Engine API, Studio generation success/error, generated build.
+- P0: security boundary, deterministic output, schema/limit rejection, safe Registry bindings,
+  exact matching, unambiguous Hero generation, Engine API, Studio generation success/error/retry,
+  generated build.
 - P1: sorting, metadata fallbacks, optional props, file selection, device switching, CORS.
 - P2: visual polish, browser-specific layout, timing distributions, accessibility automation.
 

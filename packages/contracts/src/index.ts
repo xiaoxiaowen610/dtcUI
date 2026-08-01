@@ -89,7 +89,7 @@ export type RawDesignNode = {
 export const rawDesignNodeSchema: z.ZodType<RawDesignNode> = z.lazy(() =>
   z.object({
     id: z.string().min(1).optional(),
-    name: z.string(),
+    name: z.string().trim().min(1),
     type: designNodeTypeSchema,
     semantic: z.string().min(1).optional(),
     componentKey: z.string().min(1).optional(),
@@ -254,6 +254,7 @@ export interface GenerationDiagnostic {
 
 export interface ImportPlan {
   path: string
+  defaultName?: string
   names: string[]
 }
 

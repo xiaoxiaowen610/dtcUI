@@ -8,6 +8,65 @@ import {
 } from '@forge-ui/contracts'
 import { walkDesignNodes } from '@forge-ui/design-ir'
 
+const reservedBindingNames = new Set([
+  'arguments',
+  'await',
+  'break',
+  'case',
+  'catch',
+  'class',
+  'const',
+  'continue',
+  'debugger',
+  'default',
+  'delete',
+  'do',
+  'else',
+  'enum',
+  'eval',
+  'export',
+  'extends',
+  'false',
+  'finally',
+  'for',
+  'function',
+  'if',
+  'implements',
+  'import',
+  'in',
+  'instanceof',
+  'interface',
+  'let',
+  'new',
+  'null',
+  'package',
+  'private',
+  'protected',
+  'public',
+  'return',
+  'static',
+  'super',
+  'switch',
+  'this',
+  'throw',
+  'true',
+  'try',
+  'typeof',
+  'var',
+  'void',
+  'while',
+  'with',
+  'yield'
+])
+
+function isSafeBindingIdentifier(value: string): boolean {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value) && !reservedBindingNames.has(value)
+}
+
+function isSafeJsxAttributeName(value: string): boolean {
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(value) || /^(?:aria|data)-[a-z][a-z0-9-]*$/.test(value)
+}
+
 export class RegistryError extends Error {
   constructor(readonly diagnostics: GenerationDiagnostic[]) {
     super(diagnostics.map((diagnostic) => diagnostic.message).join('; '))
@@ -35,8 +94,23 @@ export function validateRegistry(input: unknown): ComponentRegistryManifest {
   const manifest = parsed.data
   const diagnostics: GenerationDiagnostic[] = []
   const sourceKeys = new Set<string>()
+  const componentIds = new Set<string>()
+  const defaultBindingsByPath = new Map<string, string>()
+  const bindingOwners = new Map<string, { path: string; style: 'named' | 'default' }>()
 
   for (const component of manifest.components) {
+    if (componentIds.has(component.id)) {
+      diagnostics.push({
+        code: 'REGISTRY_DUPLICATE_COMPONENT_ID',
+        stage: 'registry',
+        severity: 'error',
+        message: `Component ID ${component.id} is registered more than once.`,
+        blocking: true,
+        suggestedActions: ['Keep each component ID unique inside one Registry version.']
+      })
+    }
+    componentIds.add(component.id)
+
     const importAllowed = manifest.package.allowedImportRoots.some(
       (root) => component.import.path === root || component.import.path.startsWith(`${root}/`)
     )
@@ -50,6 +124,55 @@ export function validateRegistry(input: unknown): ComponentRegistryManifest {
         blocking: true,
         suggestedActions: ['Use a declared allowedImportRoots entry.']
       })
+    }
+
+    if (!isSafeBindingIdentifier(component.import.exportName)) {
+      diagnostics.push({
+        code: 'REGISTRY_EXPORT_NAME_INVALID',
+        stage: 'registry',
+        severity: 'error',
+        message: `${component.displayName} export ${component.import.exportName} is not a valid JavaScript identifier.`,
+        blocking: true,
+        suggestedActions: ['Use a non-reserved JavaScript binding identifier.']
+      })
+    }
+
+    const bindingOwner = bindingOwners.get(component.import.exportName)
+    if (
+      bindingOwner &&
+      (bindingOwner.path !== component.import.path || bindingOwner.style !== component.import.style)
+    ) {
+      diagnostics.push({
+        code: 'REGISTRY_IMPORT_BINDING_COLLISION',
+        stage: 'registry',
+        severity: 'error',
+        message: `${component.import.path} reuses local binding ${component.import.exportName} already declared by ${bindingOwner.path}.`,
+        blocking: true,
+        suggestedActions: [
+          'Use unique export binding names or add alias support before registration.'
+        ]
+      })
+    } else {
+      bindingOwners.set(component.import.exportName, {
+        path: component.import.path,
+        style: component.import.style
+      })
+    }
+
+    if (component.import.style === 'default') {
+      const existingBinding = defaultBindingsByPath.get(component.import.path)
+      if (existingBinding && existingBinding !== component.import.exportName) {
+        diagnostics.push({
+          code: 'REGISTRY_DEFAULT_IMPORT_CONFLICT',
+          stage: 'registry',
+          severity: 'error',
+          message: `${component.import.path} declares conflicting default bindings ${existingBinding} and ${component.import.exportName}.`,
+          blocking: true,
+          suggestedActions: ['Keep one default binding name per module path.']
+        })
+      } else {
+        defaultBindingsByPath.set(component.import.path, component.import.exportName)
+      }
     }
 
     for (const sourceKey of component.sourceKeys ?? []) {
@@ -68,6 +191,17 @@ export function validateRegistry(input: unknown): ComponentRegistryManifest {
 
     const propNames = new Set<string>()
     for (const definition of component.props) {
+      if (!isSafeJsxAttributeName(definition.name)) {
+        diagnostics.push({
+          code: 'REGISTRY_PROP_NAME_INVALID',
+          stage: 'registry',
+          severity: 'error',
+          message: `${component.displayName}.${definition.name} is not a safe JSX attribute name.`,
+          blocking: true,
+          suggestedActions: ['Use a JavaScript identifier or a lowercase aria-/data- attribute.']
+        })
+      }
+
       if (propNames.has(definition.name)) {
         diagnostics.push({
           code: 'REGISTRY_DUPLICATE_PROP',

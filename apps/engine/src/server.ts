@@ -1,6 +1,11 @@
 import { pathToFileURL } from 'node:url'
 import cors from '@fastify/cors'
-import { ENGINE_VERSION, SCHEMA_VERSION, type ForgeErrorPayload } from '@forge-ui/contracts'
+import {
+  ENGINE_VERSION,
+  INPUT_LIMITS,
+  SCHEMA_VERSION,
+  type ForgeErrorPayload
+} from '@forge-ui/contracts'
 import Fastify from 'fastify'
 import { ZodError } from 'zod'
 import { DesignIrError } from '@forge-ui/design-ir'
@@ -90,7 +95,7 @@ export async function buildServer(options: BuildServerOptions = {}) {
             level: process.env.LOG_LEVEL ?? 'info',
             redact: ['req.headers.authorization']
           },
-    bodyLimit: 5 * 1024 * 1024,
+    bodyLimit: INPUT_LIMITS.maxBytes,
     requestIdHeader: 'x-request-id'
   })
 

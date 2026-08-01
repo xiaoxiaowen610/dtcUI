@@ -36,4 +36,13 @@ describe('versioned contracts', () => {
       }).success
     ).toBe(false)
   })
+
+  it('UT-CONTRACT-006 rejects a whitespace-only node name', () => {
+    expect(
+      designInputEnvelopeSchema.safeParse({
+        ...input,
+        root: { ...input.root, name: '   ' }
+      }).success
+    ).toBe(false)
+  })
 })

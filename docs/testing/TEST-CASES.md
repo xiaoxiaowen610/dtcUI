@@ -16,6 +16,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | UT-CONTRACT-003 | P0       | Layout columns are zero or above 12                         | Schema rejects invalid layout                               | Auto      |
 | UT-CONTRACT-004 | P0       | Registry contains no components                             | Schema rejects manifest                                     | Auto      |
 | UT-CONTRACT-005 | P1       | Asset source URL is malformed                               | Schema rejects asset                                        | Auto      |
+| UT-CONTRACT-006 | P0       | Design node name contains only whitespace                   | Schema rejects the node before IR normalization             | Auto      |
 
 ## 2. Design IR business logic
 
@@ -34,38 +35,46 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 
 ## 3. Registry and component matching
 
-| ID         | Priority | Scenario and input                            | Expected result                                 | Execution |
-| ---------- | -------- | --------------------------------------------- | ----------------------------------------------- | --------- |
-| BL-REG-001 | P0       | Source Key maps to valid registered component | Exact match with high confidence                | Auto      |
-| BL-REG-002 | P0       | Import path is outside allowlisted root       | `REGISTRY_IMPORT_NOT_ALLOWED` blocks Registry   | Auto      |
-| BL-REG-003 | P0       | Two components declare same Source Key        | `REGISTRY_DUPLICATE_SOURCE_KEY` blocks Registry | Auto      |
-| BL-REG-004 | P0       | Source Key is unknown                         | Manual review with low confidence               | Auto      |
-| BL-REG-005 | P0       | Required prop is absent                       | Manual review lists missing prop                | Auto      |
-| BL-REG-006 | P0       | Prop has wrong primitive type                 | Manual review lists type incompatibility        | Auto      |
-| BL-REG-007 | P0       | Enum prop value is outside allowed values     | Manual review lists enum incompatibility        | Auto      |
-| BL-REG-008 | P0       | Input supplies prop absent from manifest      | Manual review lists unknown prop                | Auto      |
-| BL-REG-009 | P1       | All optional/required props are compatible    | Exact match remains allowed                     | Auto      |
-| BL-REG-010 | P0       | Enum definition omits allowed values          | Registry validation blocks ambiguous contract   | Auto      |
-| BL-REG-011 | P1       | Component declares one prop twice             | Registry validation blocks duplicate definition | Auto      |
+| ID         | Priority | Scenario and input                                         | Expected result                                             | Execution |
+| ---------- | -------- | ---------------------------------------------------------- | ----------------------------------------------------------- | --------- |
+| BL-REG-001 | P0       | Source Key maps to valid registered component              | Exact match with high confidence                            | Auto      |
+| BL-REG-002 | P0       | Import path is outside allowlisted root                    | `REGISTRY_IMPORT_NOT_ALLOWED` blocks Registry               | Auto      |
+| BL-REG-003 | P0       | Two components declare same Source Key                     | `REGISTRY_DUPLICATE_SOURCE_KEY` blocks Registry             | Auto      |
+| BL-REG-004 | P0       | Source Key is unknown                                      | Manual review with low confidence                           | Auto      |
+| BL-REG-005 | P0       | Required prop is absent                                    | Manual review lists missing prop                            | Auto      |
+| BL-REG-006 | P0       | Prop has wrong primitive type                              | Manual review lists type incompatibility                    | Auto      |
+| BL-REG-007 | P0       | Enum prop value is outside allowed values                  | Manual review lists enum incompatibility                    | Auto      |
+| BL-REG-008 | P0       | Input supplies prop absent from manifest                   | Manual review lists unknown prop                            | Auto      |
+| BL-REG-009 | P1       | All optional/required props are compatible                 | Exact match remains allowed                                 | Auto      |
+| BL-REG-010 | P0       | Enum definition omits allowed values                       | Registry validation blocks ambiguous contract               | Auto      |
+| BL-REG-011 | P1       | Component declares one prop twice                          | Registry validation blocks duplicate definition             | Auto      |
+| BL-REG-012 | P0       | Export name is reserved or not a JavaScript identifier     | Registry blocks code that cannot form a safe import binding | Auto      |
+| BL-REG-013 | P0       | Prop name cannot form a safe JSX attribute                 | Registry blocks malformed generated syntax                  | Auto      |
+| BL-REG-014 | P0       | One module path declares two different default bindings    | Registry blocks the ambiguous import contract               | Auto      |
+| BL-REG-015 | P0       | Two components declare the same component ID               | Registry blocks ambiguous match lookup                      | Auto      |
+| BL-REG-016 | P0       | Two imports reuse one local binding from different targets | Registry blocks generated-source binding collisions         | Auto      |
 
 ## 4. Generation Plan and code generation
 
-| ID             | Priority | Scenario and input                                 | Expected result                                           | Execution |
-| -------------- | -------- | -------------------------------------------------- | --------------------------------------------------------- | --------- |
-| BL-PLAN-001    | P0       | Flagship IR and matches                            | Hero copy, actions, visual and stable imports are planned | Auto      |
-| BL-PLAN-002    | P0       | No `hero` semantic section                         | `HERO_SECTION_REQUIRED` blocks generation                 | Auto      |
-| BL-PLAN-003    | P1       | Manual-review match exists                         | Non-blocking diagnostic is retained                       | Auto      |
-| BL-PLAN-004    | P1       | Component match exists outside Hero                | It is not imported into Hero output                       | Auto      |
-| BL-PLAN-005    | P1       | Page metadata is absent                            | Documented title/description fallbacks apply              | Auto      |
-| BL-PLAN-006    | P0       | Same document/Registry versions used twice         | Source hash and generation ID are identical               | Auto      |
-| UT-CODEGEN-001 | P0       | Generate same plan with fixed timestamp twice      | All generated files and hashes are identical              | Auto      |
-| UT-CODEGEN-002 | P0       | HTML metadata contains tags, quotes and ampersands | `index.html` escapes untrusted metadata                   | Auto      |
-| UT-CODEGEN-003 | P0       | Hero text contains JSX-looking content             | AST emits safe string literal, not executable JSX         | Auto      |
-| UT-CODEGEN-004 | P1       | Inspect generated file list                        | Paths are sorted and content hashes match contents        | Auto      |
-| UT-CODEGEN-005 | P0       | Search brand hex outside `tokens.css`              | Brand literal is isolated to token output                 | Auto      |
-| UT-CODEGEN-006 | P1       | No visual component is matched                     | Accessible hidden visual placeholder is generated         | Auto      |
-| UT-CODEGEN-007 | P1       | Inspect manifest/report                            | Versions/counts/skipped validators are explicit           | Auto      |
-| UT-CODEGEN-008 | P0       | Materialize generated path containing traversal    | Output writer rejects path escaping target root           | Auto      |
+| ID             | Priority | Scenario and input                                           | Expected result                                                | Execution |
+| -------------- | -------- | ------------------------------------------------------------ | -------------------------------------------------------------- | --------- |
+| BL-PLAN-001    | P0       | Flagship IR and matches                                      | Hero copy, actions, visual and stable imports are planned      | Auto      |
+| BL-PLAN-002    | P0       | No `hero` semantic section                                   | `HERO_SECTION_REQUIRED` blocks generation                      | Auto      |
+| BL-PLAN-003    | P1       | Manual-review match exists                                   | Non-blocking diagnostic is retained                            | Auto      |
+| BL-PLAN-004    | P1       | Component match exists outside Hero                          | It is not imported into Hero output                            | Auto      |
+| BL-PLAN-005    | P1       | Page metadata is absent                                      | Documented title/description fallbacks apply                   | Auto      |
+| BL-PLAN-006    | P0       | Same document/Registry versions used twice                   | Source hash and generation ID are identical                    | Auto      |
+| BL-PLAN-007    | P0       | Document contains two sections with semantic `hero`          | `HERO_SECTION_AMBIGUOUS` blocks arbitrary first-match behavior | Auto      |
+| BL-PLAN-008    | P0       | Hero uses named and default exports from one Registry module | Plan retains one default binding and sorted named bindings     | Auto      |
+| UT-CODEGEN-001 | P0       | Generate same plan with fixed timestamp twice                | All generated files and hashes are identical                   | Auto      |
+| UT-CODEGEN-002 | P0       | HTML metadata contains tags, quotes and ampersands           | `index.html` escapes untrusted metadata                        | Auto      |
+| UT-CODEGEN-003 | P0       | Hero text contains JSX-looking content                       | AST emits safe string literal, not executable JSX              | Auto      |
+| UT-CODEGEN-004 | P1       | Inspect generated file list                                  | Paths are sorted and content hashes match contents             | Auto      |
+| UT-CODEGEN-005 | P0       | Search brand hex outside `tokens.css`                        | Brand literal is isolated to token output                      | Auto      |
+| UT-CODEGEN-006 | P1       | No visual component is matched                               | Accessible hidden visual placeholder is generated              | Auto      |
+| UT-CODEGEN-007 | P1       | Inspect manifest/report                                      | Versions/counts/skipped validators are explicit                | Auto      |
+| UT-CODEGEN-008 | P0       | Materialize generated path containing traversal              | Output writer rejects path escaping target root                | Auto      |
+| UT-CODEGEN-009 | P0       | Generation Plan contains mixed default/named imports         | Babel AST emits valid `import Default, { Named }` syntax       | Auto      |
 
 ## 5. Engine pipeline and API
 
@@ -84,22 +93,26 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | API-006     | P0       | Valid request has no Hero                                                       | 400 `GENERATION_PLAN_FAILED` with recovery action                      | Auto      |
 | API-007     | P1       | Allowed Studio Origin sends preflight/request                                   | CORS header is present; unknown Origin is not reflected                | Auto      |
 | API-008     | P1       | `PORT` is absent, valid, fractional, malformed, negative, zero, or above 65,535 | Valid port is retained; every invalid value safely falls back to 4,000 | Auto      |
+| API-009     | P0       | Analyze request body exceeds the shared 5 MB limit                              | Fastify rejects it with HTTP 413 before domain work begins             | Auto      |
 
 ## 6. Studio UI and client service
 
-| ID     | Priority | User steps                                         | Expected result                                                      | Execution  |
-| ------ | -------- | -------------------------------------------------- | -------------------------------------------------------------------- | ---------- |
-| UI-001 | P0       | Open Studio before generation                      | Project, tree, workflow, CTA and empty Inspector are visible         | Auto/jsdom |
-| UI-002 | P0       | Click `Generate flagship` and Engine resolves      | Hero preview, generation ID, 3/3 matches and connected status appear | Auto/jsdom |
-| UI-003 | P0       | Generation Promise remains pending                 | Run controls are disabled and pending labels are shown               | Auto/jsdom |
-| UI-004 | P0       | Engine rejects generation                          | Error title and structured message are visible                       | Auto/jsdom |
-| UI-005 | P1       | Generate, then open `Generated code`               | Generated-file navigation and Hero TSX are displayed                 | Auto/jsdom |
-| UI-006 | P1       | Select `tokens.css`                                | Code panel changes to token content                                  | Auto/jsdom |
-| UI-007 | P1       | Switch desktop -> tablet -> mobile                 | Preview frame receives the selected device state/class               | Auto/jsdom |
-| UI-008 | P0       | Client receives non-2xx structured Engine response | Service throws typed error preserving code/message/request ID        | Auto       |
-| UI-009 | P1       | Client receives non-JSON/invalid error response    | Safe fallback error is thrown, not `undefined: undefined`            | Auto       |
-| UI-010 | P2       | Real browser at 1440/768/390 viewports             | No overflow/overlap and focus order is valid                         | Phase 4    |
-| UI-011 | P2       | Run axe and screenshot baseline                    | No blocking a11y error or unapproved visual diff                     | Phase 4    |
+| ID     | Priority | User steps                                                           | Expected result                                                                    | Execution  |
+| ------ | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
+| UI-001 | P0       | Open Studio before generation                                        | Project, tree, workflow, CTA and empty Inspector are visible                       | Auto/jsdom |
+| UI-002 | P0       | Click `Generate flagship` and Engine resolves                        | Hero preview, generation ID, 3/3 matches and connected status appear               | Auto/jsdom |
+| UI-003 | P0       | Generation Promise remains pending                                   | Run controls are disabled and pending labels are shown                             | Auto/jsdom |
+| UI-004 | P0       | Engine rejects generation                                            | Error title, structured message, request ID and retry control appear               | Auto/jsdom |
+| UI-005 | P1       | Generate, then open `Generated code`                                 | Generated-file navigation and Hero TSX are displayed                               | Auto/jsdom |
+| UI-006 | P1       | Select `tokens.css`                                                  | Code panel changes to token content                                                | Auto/jsdom |
+| UI-007 | P1       | Switch desktop -> tablet -> mobile                                   | Preview frame receives the selected device state/class                             | Auto/jsdom |
+| UI-008 | P0       | Client receives non-2xx structured Engine response                   | Service throws typed error preserving code/message/request ID                      | Auto       |
+| UI-009 | P1       | Client receives non-JSON/invalid error response                      | Safe fallback error is thrown, not `undefined: undefined`                          | Auto       |
+| UI-010 | P2       | Real browser at 1440/768/390 viewports                               | No overflow/overlap and focus order is valid                                       | Phase 4    |
+| UI-011 | P2       | Run axe and screenshot baseline                                      | No blocking a11y error or unapproved visual diff                                   | Phase 4    |
+| UI-012 | P0       | Generation fails, then user selects retry                            | A second request runs and the successful preview replaces the error                | Auto/jsdom |
+| UI-013 | P1       | Inspect CTA, tabs, device and file controls through accessible roles | Decorative glyphs do not pollute names and selected controls expose `aria-pressed` | Auto/jsdom |
+| UI-014 | P1       | Structured Engine error contains a non-string request ID             | Client rejects the malformed payload and uses the safe header fallback             | Auto       |
 
 ## 7. Integration, build and security
 

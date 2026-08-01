@@ -126,6 +126,89 @@ describe('component Registry validation', () => {
       })
     ).toThrowError(/declares prop label more than once/)
   })
+
+  it('BL-REG-012 rejects an export name that cannot be a JavaScript binding', () => {
+    expect(() =>
+      validateRegistry({
+        ...registry,
+        components: [
+          {
+            ...registry.components[0],
+            import: { path: '@example/ui', exportName: 'bad-name', style: 'named' }
+          }
+        ]
+      })
+    ).toThrowError(/valid JavaScript identifier/)
+  })
+
+  it('BL-REG-013 rejects prop names that cannot be emitted as safe JSX attributes', () => {
+    expect(() =>
+      validateRegistry({
+        ...registry,
+        components: [
+          {
+            ...registry.components[0],
+            props: [{ name: 'bad prop', type: 'string' }]
+          }
+        ]
+      })
+    ).toThrowError(/safe JSX attribute/)
+  })
+
+  it('BL-REG-014 rejects conflicting default bindings from one module', () => {
+    expect(() =>
+      validateRegistry({
+        ...registry,
+        components: [
+          {
+            ...registry.components[0],
+            import: { path: '@example/ui', exportName: 'Button', style: 'default' }
+          },
+          {
+            ...registry.components[0],
+            id: 'card',
+            displayName: 'Card',
+            sourceKeys: ['design.card'],
+            import: { path: '@example/ui', exportName: 'Card', style: 'default' }
+          }
+        ]
+      })
+    ).toThrowError(/conflicting default bindings/)
+  })
+
+  it('BL-REG-015 rejects duplicate component IDs', () => {
+    expect(() =>
+      validateRegistry({
+        ...registry,
+        components: [
+          registry.components[0],
+          {
+            ...registry.components[0],
+            displayName: 'Other Button',
+            sourceKeys: ['design.other-button']
+          }
+        ]
+      })
+    ).toThrowError(/Component ID button is registered more than once/)
+  })
+
+  it('BL-REG-016 rejects local binding collisions across Registry imports', () => {
+    expect(() =>
+      validateRegistry({
+        ...registry,
+        components: [
+          registry.components[0],
+          {
+            ...registry.components[0],
+            id: 'nested-button',
+            displayName: 'Nested Button',
+            sourceKeys: ['design.nested-button'],
+            import: { path: '@example/ui/nested', exportName: 'Button', style: 'named' }
+          }
+        ]
+      })
+    ).toThrowError(/reuses local binding Button/)
+  })
 })
 
 describe('component matching compatibility', () => {
