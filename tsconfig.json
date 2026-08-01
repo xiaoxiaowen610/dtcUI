@@ -21,6 +21,7 @@
       "@forge-ui/component-registry": ["./packages/component-registry/src/index.ts"],
       "@forge-ui/generation-plan": ["./packages/generation-plan/src/index.ts"],
       "@forge-ui/code-generator": ["./packages/code-generator/src/index.ts"],
+      "@forge-ui/token-resolver": ["./packages/token-resolver/src/index.ts"],
       "@forge-ui/example-external-ui": ["./packages/example-external-ui/src/index.tsx"]
     },
     "types": ["node", "vite/client"]

@@ -18,7 +18,7 @@
 | 顺序 | 分支                                 | 基于     | 交付重点                                | 状态   |
 | ---- | ------------------------------------ | -------- | --------------------------------------- | ------ |
 | 01   | `agent/batch-01-ci-evals`            | `main`   | CI、固定 Eval、质量证据                 | 已完成 |
-| 02   | `agent/batch-02-token-engine`        | Batch 01 | Token 解析、Alias、冲突与 CSS Variables | 待开始 |
+| 02   | `agent/batch-02-token-engine`        | Batch 01 | Token 解析、Alias、冲突与 CSS Variables | 已完成 |
 | 03   | `agent/batch-03-component-matching`  | Batch 02 | 硬约束、Adapter、Recipe、Native、Manual | 待开始 |
 | 04   | `agent/batch-04-studio-workbench`    | Batch 03 | 导入、Tree/Preview/Code/Diagnostic 联动 | 待开始 |
 | 05   | `agent/batch-05-validation-export`   | Batch 04 | 隔离预览、Runtime、布局检查、双模式 ZIP | 待开始 |

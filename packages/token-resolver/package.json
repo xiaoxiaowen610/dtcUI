@@ -1,5 +1,5 @@
 {
-  "name": "@forge-ui/generation-plan",
+  "name": "@forge-ui/token-resolver",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -8,8 +8,6 @@
   },
   "dependencies": {
     "@forge-ui/contracts": "workspace:*",
-    "@forge-ui/design-ir": "workspace:*",
-    "@forge-ui/shared": "workspace:*",
-    "@forge-ui/token-resolver": "workspace:*"
+    "@forge-ui/shared": "workspace:*"
   }
 }

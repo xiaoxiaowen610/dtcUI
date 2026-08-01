@@ -11,6 +11,7 @@ The strategy follows the repository trust model:
 untrusted input
 -> runtime schema
 -> Design IR limits and stable IDs
+-> Token graph and concrete-value validation
 -> Registry allowlist and prop compatibility
 -> deterministic Generation Plan
 -> AST code generation
@@ -24,6 +25,7 @@ Automated in this phase:
 
 - pure utility and runtime-schema unit tests;
 - Design IR normalization, limits, ordering, and lookup;
+- Token path/value validation, Alias graph, conflict diagnostics, deterministic CSS, and performance budget;
 - Registry validation, safe identifiers, named/default imports, prop compatibility, and manual-review degradation;
 - Generation Plan success, Hero uniqueness, failure, import, action, visual, and diagnostic behavior;
 - generated-file determinism, escaping, ordering, token boundaries, and manifest/report behavior;
@@ -50,6 +52,7 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 | Layer       | Purpose                                       | Tool                    | Gate         |
 | ----------- | --------------------------------------------- | ----------------------- | ------------ |
 | Unit        | Pure functions, schemas, guards, serializers  | Vitest                  | Every change |
+| Token       | Alias/value/conflict/CSS resolution           | Vitest                  | Every change |
 | Business    | IR -> Registry -> Plan -> Codegen behavior    | Vitest                  | Every change |
 | API         | Fastify request/response/error/CORS contract  | Fastify inject + Vitest | Every change |
 | UI          | User-visible Studio states and interactions   | Testing Library + jsdom | Every change |
@@ -69,6 +72,7 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 ## 5. Test data
 
 - Primary valid fixture: `presets/saas/input.json` + `presets/saas/registry.json`.
+- Token failure fixtures are derived from the canonical preset and include cycle and missing-reference graphs.
 - Executable fixed suite: `evals/cases.ts`, derived from the canonical preset without duplicated JSON drift.
 - Legacy flagship expectation: `evals/flagship-saas/expected.json`.
 - Invalid data is derived per test and never written into production presets.

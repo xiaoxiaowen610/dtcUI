@@ -85,6 +85,9 @@ importers:
       '@forge-ui/generation-plan':
         specifier: workspace:*
         version: link:../../packages/generation-plan
+      '@forge-ui/token-resolver':
+        specifier: workspace:*
+        version: link:../../packages/token-resolver
       fastify:
         specifier: ^5.11.0
         version: 5.11.0
@@ -169,8 +172,20 @@ importers:
       '@forge-ui/shared':
         specifier: workspace:*
         version: link:../shared
+      '@forge-ui/token-resolver':
+        specifier: workspace:*
+        version: link:../token-resolver
 
   packages/shared: {}
+
+  packages/token-resolver:
+    dependencies:
+      '@forge-ui/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@forge-ui/shared':
+        specifier: workspace:*
+        version: link:../shared
 
 packages:
 

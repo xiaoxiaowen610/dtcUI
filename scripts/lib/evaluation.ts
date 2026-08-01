@@ -6,6 +6,7 @@ import {
   type GenerateResponse
 } from '@forge-ui/contracts'
 import { DesignIrError } from '@forge-ui/design-ir'
+import { TokenResolverError } from '@forge-ui/token-resolver'
 import { generateDesign } from '../../apps/engine/src/pipeline'
 
 export interface EvalCaseResult {
@@ -18,6 +19,7 @@ export interface EvalCaseResult {
     errorCode?: string
     matches: Record<string, string>
     strategies: Record<string, ComponentMatchResult['strategy']>
+    tokens: Record<string, string>
     diagnostics: string[]
   }
   differences: string[]
@@ -46,6 +48,9 @@ export class EvalSuiteError extends Error {
 
 function errorCode(error: unknown): string {
   if (error instanceof DesignIrError) return error.code
+  if (error instanceof TokenResolverError) {
+    return error.diagnostics[0]?.code ?? 'TOKEN_RESOLUTION_FAILED'
+  }
   if (error instanceof Error && error.name === 'ZodError') return 'DESIGN_SCHEMA_INVALID'
   if (error && typeof error === 'object' && 'code' in error) {
     const candidate = (error as { code?: unknown }).code
@@ -69,6 +74,9 @@ function actualForSuccess(result: GenerateResponse): EvalCaseResult['actual'] {
     strategies: sortedRecord(
       result.matches.map((match) => [match.nodeId, match.strategy] as [string, string])
     ) as Record<string, ComponentMatchResult['strategy']>,
+    tokens: sortedRecord(
+      result.tokenResolution.tokens.map((token) => [token.path, token.cssValue])
+    ),
     diagnostics: [...new Set(result.diagnostics.map((diagnostic) => diagnostic.code))].sort()
   }
 }
@@ -79,6 +87,7 @@ function actualForError(error: unknown): EvalCaseResult['actual'] {
     errorCode: errorCode(error),
     matches: {},
     strategies: {},
+    tokens: {},
     diagnostics: []
   }
 }
@@ -130,6 +139,7 @@ function evaluateCase(evalCase: EvalCase): EvalCaseResult {
 
   compareRecord('matches', evalCase.expected.expectedMatches, actual.matches, differences)
   compareRecord('strategies', evalCase.expected.expectedStrategies, actual.strategies, differences)
+  compareRecord('tokens', evalCase.expected.expectedTokens, actual.tokens, differences)
 
   for (const diagnostic of [...(evalCase.expected.expectedDiagnostics ?? [])].sort()) {
     if (!actual.diagnostics.includes(diagnostic)) {

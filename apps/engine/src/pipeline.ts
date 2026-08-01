@@ -8,28 +8,34 @@ import {
 } from '@forge-ui/contracts'
 import { createDesignDocument, walkDesignNodes } from '@forge-ui/design-ir'
 import { createGenerationPlan } from '@forge-ui/generation-plan'
+import { resolveTokens } from '@forge-ui/token-resolver'
 
 export function analyzeDesign(request: unknown): AnalyzeResponse {
   const parsed = analyzeRequestSchema.parse(request)
   const document = createDesignDocument(parsed.input)
+  const tokenResolution = resolveTokens(document.tokens)
   const registry = validateRegistry(parsed.registry)
   const matches = matchComponents(document, registry)
   const nodes = walkDesignNodes(document.root)
-  const diagnostics: GenerationDiagnostic[] = matches
-    .filter((match) => match.strategy === 'manual-review')
-    .map((match) => ({
-      code: 'COMPONENT_MANUAL_REVIEW',
-      stage: 'registry',
-      severity: 'warning',
-      message: `Node ${match.nodeId} requires manual component review.`,
-      nodeId: match.nodeId,
-      blocking: false,
-      suggestedActions: ['Select a registered component or keep a semantic native fallback.']
-    }))
+  const diagnostics: GenerationDiagnostic[] = [
+    ...tokenResolution.diagnostics,
+    ...matches
+      .filter((match) => match.strategy === 'manual-review')
+      .map((match): GenerationDiagnostic => ({
+        code: 'COMPONENT_MANUAL_REVIEW',
+        stage: 'registry',
+        severity: 'warning',
+        message: `Node ${match.nodeId} requires manual component review.`,
+        nodeId: match.nodeId,
+        blocking: false,
+        suggestedActions: ['Select a registered component or keep a semantic native fallback.']
+      }))
+  ]
 
   return {
     schemaVersion: '1.0',
     document,
+    tokenResolution,
     matches,
     diagnostics,
     summary: {
@@ -45,7 +51,12 @@ export function generateDesign(request: unknown, createdAt?: string): GenerateRe
   const parsed = analyzeRequestSchema.parse(request)
   const analysis = analyzeDesign(parsed)
   const registry = validateRegistry(parsed.registry)
-  const plan = createGenerationPlan(analysis.document, registry, analysis.matches)
+  const plan = createGenerationPlan(
+    analysis.document,
+    registry,
+    analysis.matches,
+    analysis.tokenResolution
+  )
   const project = generateProject(plan, registry, {
     ...(createdAt ? { createdAt } : {}),
     nodeCount: analysis.summary.totalNodes,
