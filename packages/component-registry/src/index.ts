@@ -65,6 +65,32 @@ export function validateRegistry(input: unknown): ComponentRegistryManifest {
       }
       sourceKeys.add(sourceKey)
     }
+
+    const propNames = new Set<string>()
+    for (const definition of component.props) {
+      if (propNames.has(definition.name)) {
+        diagnostics.push({
+          code: 'REGISTRY_DUPLICATE_PROP',
+          stage: 'registry',
+          severity: 'error',
+          message: `${component.displayName} declares prop ${definition.name} more than once.`,
+          blocking: true,
+          suggestedActions: ['Keep each prop definition unique inside one component.']
+        })
+      }
+      propNames.add(definition.name)
+
+      if (definition.type === 'enum' && (!definition.values || definition.values.length === 0)) {
+        diagnostics.push({
+          code: 'REGISTRY_ENUM_VALUES_REQUIRED',
+          stage: 'registry',
+          severity: 'error',
+          message: `${component.displayName}.${definition.name} is an enum without allowed values.`,
+          blocking: true,
+          suggestedActions: ['Declare at least one allowed enum value.']
+        })
+      }
+    }
   }
 
   if (diagnostics.length > 0) {
@@ -74,13 +100,50 @@ export function validateRegistry(input: unknown): ComponentRegistryManifest {
   return manifest
 }
 
-function missingRequiredProps(
+function propIncompatibilities(
   component: RegisteredComponent,
   props: Record<string, unknown>
 ): string[] {
-  return component.props
+  const incompatibilities = component.props
     .filter((definition) => definition.required && props[definition.name] === undefined)
-    .map((definition) => definition.name)
+    .map((definition) => `Missing required prop: ${definition.name}.`)
+
+  const definitions = new Map(component.props.map((definition) => [definition.name, definition]))
+  const unknownProps = Object.keys(props)
+    .filter((name) => !definitions.has(name))
+    .sort()
+
+  if (unknownProps.length > 0) {
+    incompatibilities.push(`Unknown props: ${unknownProps.join(', ')}.`)
+  }
+
+  for (const definition of component.props) {
+    const value = props[definition.name]
+    if (value === undefined) continue
+
+    if (definition.type === 'enum') {
+      if (!definition.values?.some((allowedValue) => Object.is(allowedValue, value))) {
+        incompatibilities.push(
+          `Prop ${definition.name} must be one of ${definition.values?.map(String).join(', ') ?? 'no declared values'}.`
+        )
+      }
+      continue
+    }
+
+    const typeMatches =
+      typeof value === definition.type &&
+      (definition.type !== 'number' || (typeof value === 'number' && Number.isFinite(value)))
+
+    if (!typeMatches) {
+      incompatibilities.push(
+        `Prop ${definition.name} expected ${definition.type} but received ${
+          typeof value === 'number' && !Number.isFinite(value) ? 'non-finite number' : typeof value
+        }.`
+      )
+    }
+  }
+
+  return incompatibilities
 }
 
 export function matchComponents(
@@ -113,15 +176,15 @@ export function matchComponents(
         }
       }
 
-      const missing = missingRequiredProps(component, node.component?.props ?? {})
-      if (missing.length > 0) {
+      const incompatibilities = propIncompatibilities(component, node.component?.props ?? {})
+      if (incompatibilities.length > 0) {
         return {
           nodeId: node.id,
           componentId: component.id,
           strategy: 'manual-review',
           confidence: 'low',
           reasons: [`Source Key matched ${component.displayName}.`],
-          incompatibilities: [`Missing required props: ${missing.join(', ')}.`],
+          incompatibilities,
           warnings: []
         }
       }

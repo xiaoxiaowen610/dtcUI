@@ -17,9 +17,29 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['packages/**/*.test.ts', 'apps/**/*.test.ts'],
+    include: [
+      'packages/**/*.test.ts',
+      'apps/**/*.test.ts',
+      'apps/**/*.test.tsx',
+      'scripts/**/*.test.ts'
+    ],
+    setupFiles: ['./test/setup.ts'],
     coverage: {
-      reporter: ['text', 'html']
+      provider: 'v8',
+      reporter: ['text', 'json-summary', 'html'],
+      reportsDirectory: './coverage',
+      include: [
+        'packages/*/src/index.ts',
+        'apps/engine/src/{pipeline,server}.ts',
+        'apps/studio/src/{App,services/engine,stores/workspace}.{ts,tsx}'
+      ],
+      exclude: ['packages/example-external-ui/**'],
+      thresholds: {
+        statements: 75,
+        branches: 70,
+        functions: 75,
+        lines: 75
+      }
     }
   }
 })

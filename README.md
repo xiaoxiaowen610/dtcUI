@@ -61,6 +61,20 @@ Run the complete local gate:
 pnpm check
 ```
 
+Run test layers independently or generate coverage:
+
+```bash
+pnpm test:unit
+pnpm test:api
+pnpm test:ui
+pnpm test:coverage
+```
+
+See the [test strategy](./docs/testing/TEST-STRATEGY.md),
+[traceable test cases](./docs/testing/TEST-CASES.md), and
+[latest execution report](./docs/testing/TEST-REPORT.md). Browser screenshot and layout baselines
+remain an explicit Phase 4 gate and are not counted as passed in Phase 1.
+
 Or run checks separately:
 
 ```bash

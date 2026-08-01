@@ -8,6 +8,10 @@ import { RegistryError } from '@forge-ui/component-registry'
 import { GenerationPlanError } from '@forge-ui/generation-plan'
 import { analyzeDesign, generateDesign } from './pipeline'
 
+interface BuildServerOptions {
+  logger?: boolean
+}
+
 function errorPayload(error: unknown, requestId: string): ForgeErrorPayload {
   if (error instanceof DesignIrError) {
     return {
@@ -68,12 +72,24 @@ function errorPayload(error: unknown, requestId: string): ForgeErrorPayload {
   }
 }
 
-export async function buildServer() {
+function statusCodeFor(payload: ForgeErrorPayload): 400 | 500 {
+  return payload.code === 'INTERNAL_ERROR' ? 500 : 400
+}
+
+export function parsePort(value: string | undefined): number {
+  const port = value === undefined ? 4000 : Number(value)
+  return Number.isInteger(port) && port >= 1 && port <= 65_535 ? port : 4000
+}
+
+export async function buildServer(options: BuildServerOptions = {}) {
   const app = Fastify({
-    logger: {
-      level: process.env.LOG_LEVEL ?? 'info',
-      redact: ['req.headers.authorization']
-    },
+    logger:
+      options.logger === false
+        ? false
+        : {
+            level: process.env.LOG_LEVEL ?? 'info',
+            redact: ['req.headers.authorization']
+          },
     bodyLimit: 5 * 1024 * 1024,
     requestIdHeader: 'x-request-id'
   })
@@ -94,7 +110,8 @@ export async function buildServer() {
     try {
       return analyzeDesign(request.body)
     } catch (error) {
-      return reply.code(400).send(errorPayload(error, request.id))
+      const payload = errorPayload(error, request.id)
+      return reply.code(statusCodeFor(payload)).send(payload)
     }
   })
 
@@ -102,7 +119,8 @@ export async function buildServer() {
     try {
       return generateDesign(request.body)
     } catch (error) {
-      return reply.code(400).send(errorPayload(error, request.id))
+      const payload = errorPayload(error, request.id)
+      return reply.code(statusCodeFor(payload)).send(payload)
     }
   })
 
@@ -111,8 +129,7 @@ export async function buildServer() {
 
 async function start() {
   const app = await buildServer()
-  const parsedPort = Number.parseInt(process.env.PORT ?? '4000', 10)
-  const port = Number.isSafeInteger(parsedPort) ? parsedPort : 4000
+  const port = parsePort(process.env.PORT)
 
   await app.listen({ host: '127.0.0.1', port })
 }
