@@ -375,6 +375,9 @@ export interface HeroActionPlan {
 
 export interface HeroPlan {
   id: string
+  eyebrowNodeId?: string
+  titleNodeId?: string
+  descriptionNodeId?: string
   eyebrow: string
   title: string
   description: string

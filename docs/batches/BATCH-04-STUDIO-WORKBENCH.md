@@ -1,6 +1,6 @@
 # Batch 04：Studio Workbench 交互闭环
 
-状态：待开始
+状态：已完成
 
 分支：`agent/batch-04-studio-workbench`
 
@@ -49,4 +49,17 @@
 
 ## 实测结果
 
-待本批完成后填写。
+- 本地 JSON 文件和编辑器均执行类型、空文件、5 MB、JSON 语法位置和版本化 Schema 校验；
+  无效输入不替换最后成功工作区。
+- Preset 与 Registry 为显式选择，未选择 Registry 时两个生成入口均禁用。
+- Design Tree 递归覆盖全部节点，支持展开、稳定选择、Arrow/Enter/Space 键盘操作和
+  Zustand 持久状态归一化。
+- Tree、Preview、Code、Inspector、Diagnostic 共享 `data-forge-node-id`；深层 Preview 或
+  Diagnostic 选择会自动展开 Tree 祖先并定位生成文件。
+- Responsive Resolver 按 mobile-first 合并：Base → Mobile → Tablet → Desktop，仅覆盖显式字段；
+  visibility 未知值不从低断点继承。
+- Studio 保留 Desktop/Tablet/Mobile、节点和文件选择；Engine 失败显示 Request ID，保留最后成功
+  预览并支持 Retry，Pending 状态阻止重复请求。
+- 测试：16 个文件、154 个测试全部通过；Studio 专项 5 个文件、33 个测试通过。
+- Coverage：Statements 88.82%、Branches 80.66%、Functions 93.10%、Lines 90.14%。
+- 生成源码新增 Hero 文本节点 ID，使 Code 定位从“相关文件”提升为精确节点定位。

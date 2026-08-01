@@ -59,6 +59,6 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return (await response.json()) as T
 }
 
-export function generateFlagship(request: AnalyzeRequest): Promise<GenerateResponse> {
+export function generateProject(request: AnalyzeRequest): Promise<GenerateResponse> {
   return post<GenerateResponse>('/api/generate', request)
 }

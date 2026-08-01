@@ -1,45 +1,45 @@
-# ForgeUI Through Batch 03 Test Execution Report
+# ForgeUI Through Batch 04 Test Execution Report
 
 ## 1. Result
 
-**PASS** — all automated quality gates through Batch 03 completed successfully on 2026-08-01.
+**PASS** — all automated quality gates through Batch 04 completed successfully on 2026-08-01.
 
-| Gate                             | Result | Evidence                                                      |
-| -------------------------------- | ------ | ------------------------------------------------------------- |
-| TypeScript                       | Passed | `tsc --noEmit` returned exit code 0                           |
-| Unit/business/API/UI/integration | Passed | 13 files, 135 tests, 0 failed                                 |
-| Coverage                         | Passed | All configured global thresholds exceeded                     |
-| Engine production build          | Passed | `tsup` produced the Node 24 ESM bundle                        |
-| Studio production build          | Passed | Vite transformed 71 modules and emitted the production bundle |
-| Generated flagship TypeScript    | Passed | Materialized output type-check succeeded                      |
-| Generated flagship Vite build    | Passed | 7 Exact matches, 4 Section modules, 16 generated files built  |
-| Fixed evaluation suite           | Passed | 6/6 cases; labeled Top-1 13/13 (100.0% on this fixed set)     |
-| Token performance                | Passed | 2,000-token alias chain remained below the 500 ms unit budget |
+| Gate                             | Result | Evidence                                                       |
+| -------------------------------- | ------ | -------------------------------------------------------------- |
+| TypeScript                       | Passed | `tsc --noEmit` returned exit code 0                            |
+| Unit/business/API/UI/integration | Passed | 16 files, 154 tests, 0 failed                                  |
+| Coverage                         | Passed | All configured global thresholds exceeded                      |
+| Engine production build          | Passed | `tsup` produced the Node 24 ESM bundle                         |
+| Studio production build          | Passed | Vite transformed 156 modules and emitted the production bundle |
+| Generated flagship TypeScript    | Passed | Materialized output type-check succeeded                       |
+| Generated flagship Vite build    | Passed | 7 Exact matches, 4 Section modules, 16 generated files built   |
+| Fixed evaluation suite           | Passed | 6/6 cases; labeled Top-1 13/13 (100.0% on this fixed set)      |
+| Token performance                | Passed | 2,000-token alias chain remained below the 500 ms unit budget  |
 
 ## 2. Environment
 
-| Item            | Value                               |
-| --------------- | ----------------------------------- |
-| Baseline commit | `05ecbce` (remote Batch 02)         |
-| Branch          | `agent/batch-03-component-matching` |
-| Node.js         | `v24.14.0`                          |
-| pnpm            | `11.7.0`                            |
-| Test runner     | Vitest `4.1.10`                     |
-| UI environment  | jsdom `30.0.1` + Testing Library    |
-| Execution date  | 2026-08-01 (Asia/Tokyo)             |
+| Item            | Value                             |
+| --------------- | --------------------------------- |
+| Baseline commit | `5457a0a` (remote Batch 03)       |
+| Branch          | `agent/batch-04-studio-workbench` |
+| Node.js         | `v24.14.0`                        |
+| pnpm            | `11.7.0`                          |
+| Test runner     | Vitest `4.1.10`                   |
+| UI environment  | jsdom `30.0.1` + Testing Library  |
+| Execution date  | 2026-08-01 (Asia/Tokyo)           |
 
 ## 3. Coverage
 
 Command: `pnpm test:coverage`
 
-| Metric     |           Actual | Gate | Result |
-| ---------- | ---------------: | ---: | ------ |
-| Statements | 91.05% (814/894) |  75% | Passed |
-| Branches   | 81.38% (564/693) |  70% | Passed |
-| Functions  | 94.87% (222/234) |  75% | Passed |
-| Lines      | 92.50% (741/801) |  75% | Passed |
+| Metric     |            Actual | Gate | Result |
+| ---------- | ----------------: | ---: | ------ |
+| Statements | 88.82% (946/1065) |  75% | Passed |
+| Branches   |  80.66% (684/848) |  70% | Passed |
+| Functions  |  93.10% (270/290) |  75% | Passed |
+| Lines      |  90.14% (851/944) |  75% | Passed |
 
-The coverage denominator is restricted to ForgeUI production logic implemented through Batch 03. The
+The coverage denominator is restricted to ForgeUI production logic implemented through Batch 04. The
 example external UI package is excluded because it is a fixture dependency, not ForgeUI generation logic.
 
 ## 4. Defects found and corrected
@@ -59,6 +59,9 @@ example external UI package is excluded because it is a fixture dependency, not 
 | DEF-011 | P0       | An import such as `@example/ui/../../untrusted` passed the prefix allowlist despite containing traversal segments.                                                            | Added segment-level import validation before matching or code generation.                                                              | B03-SEC-001                                                               |
 | DEF-012 | P1       | Generation Report hardcoded Adapter, Recipe, and Native counters to zero even when real match results used those strategies.                                                  | Derived every strategy count from the actual match collection.                                                                         | B03-REPORT-001                                                            |
 | DEF-013 | P0       | A generated Section wrapper could have the same local name as its imported Registry component (`FeatureGrid`), producing invalid TypeScript.                                  | Generation Plan now reserves Hero/import bindings and assigns a deterministic conflict-free wrapper name such as `FeatureGridSection`. | B03-CODEGEN-001 plus generated TypeScript/Vite validation                 |
+| DEF-014 | P1       | Generated Hero title, eyebrow, and description lacked stable node markers, so Code navigation could identify only a related file.                                             | Added normalized copy node IDs to the Generation Plan and Babel AST output.                                                            | B04-UI-003, UT-CODEGEN-001                                                |
+| DEF-015 | P1       | A latest Engine mutation failure replaced the success view, preventing review of the last valid output while correcting the error.                                            | Retained the last successful result and render later failures as a recoverable banner with Request ID and Retry.                       | B04-UI-002, B04-UI-008                                                    |
+| DEF-016 | P0       | Studio could send only the built-in flagship request and had no type/size/syntax/schema boundary for local JSON.                                                              | Added explicit Preset/Registry controls, guarded file/editor import, and a custom-request integration path.                            | B04-UT-003–005, B04-SEC-001, B04-UI-001, B04-INT-001                      |
 
 No P0 or P1 product defect remains open from this execution.
 
@@ -87,6 +90,12 @@ prop/slot/capability/token constraints, semantic thresholds, stable tie-breaks, 
 real report counters, and labeled Top-1 evaluation. A deliberate generated-project validation exposed
 the Section/import binding collision; after the naming fix, both TypeScript and Vite passed with all
 16 generated files.
+
+Batch 04 replaced the flagship-only presentation with a node-linked workbench. Local JSON is validated
+before becoming the active draft, Registry selection is explicit, and the complete Tree is keyboard
+navigable. Tree, Preview, Code, Inspector, and Diagnostics share stable node IDs; device, selection,
+expansion, and file state survive panel changes. Engine errors retain the last success and remain
+retryable with their Request ID. The mobile-first resolver has independent unit coverage.
 
 Final commands:
 

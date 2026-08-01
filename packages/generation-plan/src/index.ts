@@ -76,6 +76,9 @@ export function createGenerationPlan(
   }
 
   const hero = heroes[0]!
+  const eyebrowNode = findNodeBySemantic(hero, 'hero-eyebrow')
+  const titleNode = findNodeBySemantic(hero, 'hero-title')
+  const descriptionNode = findNodeBySemantic(hero, 'hero-description')
 
   const heroNodeIds = new Set(walkDesignNodes(hero).map((node) => node.id))
   const exactMatches = matches.filter(
@@ -200,6 +203,9 @@ export function createGenerationPlan(
     tokenResolution,
     hero: {
       id: hero.id,
+      ...(eyebrowNode ? { eyebrowNodeId: eyebrowNode.id } : {}),
+      ...(titleNode ? { titleNodeId: titleNode.id } : {}),
+      ...(descriptionNode ? { descriptionNodeId: descriptionNode.id } : {}),
       eyebrow: textForSemantic(hero, 'hero-eyebrow'),
       title: textForSemantic(hero, 'hero-title'),
       description: textForSemantic(hero, 'hero-description'),
