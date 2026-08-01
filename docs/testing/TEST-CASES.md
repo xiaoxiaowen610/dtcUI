@@ -1,4 +1,4 @@
-# ForgeUI Phase 1 Detailed Test Cases
+# ForgeUI Through Batch 03 Detailed Test Cases
 
 Legend: P0 is release-blocking, P1 is important regression coverage, and P2 is future/manual. `Auto`
 means implemented in Vitest or the build scripts; `Phase 4` is deliberately excluded from this release.
@@ -73,35 +73,49 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | BL-REG-014 | P0       | One module path declares two different default bindings    | Registry blocks the ambiguous import contract               | Auto      |
 | BL-REG-015 | P0       | Two components declare the same component ID               | Registry blocks ambiguous match lookup                      | Auto      |
 | BL-REG-016 | P0       | Two imports reuse one local binding from different targets | Registry blocks generated-source binding collisions         | Auto      |
+| B03-UT-001 | P0       | Source Key and all hard constraints match                  | Exact/high result with rule score 100                       | Auto      |
+| B03-UT-002 | P0       | Exact Source Key lacks a required prop                     | Semantic score cannot override the hard rejection           | Auto      |
+| B03-UT-003 | P0       | Adapter maps Source Key/semantic props, defaults, and enum | Stable validated adapted props and target component         | Auto      |
+| B03-UT-004 | P0       | Adapter targets unknown prop or duplicates one semantic    | Registry blocks the invalid or ambiguous Adapter            | Auto      |
+| B03-UT-005 | P0       | Recipe references missing member or a valid semantic       | Missing member blocks; valid Recipe is selected             | Auto      |
+| B03-UT-006 | P0       | Two compatible candidates receive the same score           | Lowest Component ID wins deterministic tie-break            | Auto      |
+| B03-UT-007 | P1       | Partial semantic overlap produces score 80                 | Candidate is held for explicit confirmation                 | Auto      |
+| B03-UT-008 | P0       | Safe heading semantic has no compatible component          | Native `h2` fallback is returned                            | Auto      |
+| B03-BL-001 | P0       | Exact and high-scoring semantic candidate both exist       | Compatible Exact always wins                                | Auto      |
+| B03-BL-002 | P0       | Exact component requires unavailable token                 | Missing required token blocks component                     | Auto      |
+| B03-BL-003 | P0       | Required text slot has no source material                  | Slot hard constraint blocks component                       | Auto      |
+| B03-BL-004 | P0       | Visual node targets component without visual capability    | Capability hard constraint blocks component                 | Auto      |
 
 ## 5. Generation Plan and code generation
 
-| ID             | Priority | Scenario and input                                           | Expected result                                                | Execution |
-| -------------- | -------- | ------------------------------------------------------------ | -------------------------------------------------------------- | --------- |
-| BL-PLAN-001    | P0       | Flagship IR and matches                                      | Hero copy, actions, visual and stable imports are planned      | Auto      |
-| BL-PLAN-002    | P0       | No `hero` semantic section                                   | `HERO_SECTION_REQUIRED` blocks generation                      | Auto      |
-| BL-PLAN-003    | P1       | Manual-review match exists                                   | Non-blocking diagnostic is retained                            | Auto      |
-| BL-PLAN-004    | P1       | Component match exists outside Hero                          | It is not imported into Hero output                            | Auto      |
-| BL-PLAN-005    | P1       | Page metadata is absent                                      | Documented title/description fallbacks apply                   | Auto      |
-| BL-PLAN-006    | P0       | Same document/Registry versions used twice                   | Source hash and generation ID are identical                    | Auto      |
-| BL-PLAN-007    | P0       | Document contains two sections with semantic `hero`          | `HERO_SECTION_AMBIGUOUS` blocks arbitrary first-match behavior | Auto      |
-| BL-PLAN-008    | P0       | Hero uses named and default exports from one Registry module | Plan retains one default binding and sorted named bindings     | Auto      |
-| UT-CODEGEN-001 | P0       | Generate same plan with fixed timestamp twice                | All generated files and hashes are identical                   | Auto      |
-| UT-CODEGEN-002 | P0       | HTML metadata contains tags, quotes and ampersands           | `index.html` escapes untrusted metadata                        | Auto      |
-| UT-CODEGEN-003 | P0       | Hero text contains JSX-looking content                       | AST emits safe string literal, not executable JSX              | Auto      |
-| UT-CODEGEN-004 | P1       | Inspect generated file list                                  | Paths are sorted and content hashes match contents             | Auto      |
-| UT-CODEGEN-005 | P0       | Search brand hex outside `tokens.css`                        | Brand literal is isolated to token output                      | Auto      |
-| UT-CODEGEN-006 | P1       | No visual component is matched                               | Accessible hidden visual placeholder is generated              | Auto      |
-| UT-CODEGEN-007 | P1       | Inspect manifest/report                                      | Versions/counts/skipped validators are explicit                | Auto      |
-| UT-CODEGEN-008 | P0       | Materialize generated path containing traversal              | Output writer rejects path escaping target root                | Auto      |
-| UT-CODEGEN-009 | P0       | Generation Plan contains mixed default/named imports         | Babel AST emits valid `import Default, { Named }` syntax       | Auto      |
+| ID              | Priority | Scenario and input                                           | Expected result                                                | Execution |
+| --------------- | -------- | ------------------------------------------------------------ | -------------------------------------------------------------- | --------- |
+| BL-PLAN-001     | P0       | Flagship IR and matches                                      | Hero copy, actions, visual and stable imports are planned      | Auto      |
+| BL-PLAN-002     | P0       | No `hero` semantic section                                   | `HERO_SECTION_REQUIRED` blocks generation                      | Auto      |
+| BL-PLAN-003     | P1       | Manual-review match exists                                   | Non-blocking diagnostic is retained                            | Auto      |
+| BL-PLAN-004     | P1       | Component match exists outside Hero                          | It is not imported into Hero output                            | Auto      |
+| BL-PLAN-005     | P1       | Page metadata is absent                                      | Documented title/description fallbacks apply                   | Auto      |
+| BL-PLAN-006     | P0       | Same document/Registry versions used twice                   | Source hash and generation ID are identical                    | Auto      |
+| BL-PLAN-007     | P0       | Document contains two sections with semantic `hero`          | `HERO_SECTION_AMBIGUOUS` blocks arbitrary first-match behavior | Auto      |
+| BL-PLAN-008     | P0       | Hero uses named and default exports from one Registry module | Plan retains one default binding and sorted named bindings     | Auto      |
+| UT-CODEGEN-001  | P0       | Generate same plan with fixed timestamp twice                | All generated files and hashes are identical                   | Auto      |
+| UT-CODEGEN-002  | P0       | HTML metadata contains tags, quotes and ampersands           | `index.html` escapes untrusted metadata                        | Auto      |
+| UT-CODEGEN-003  | P0       | Hero text contains JSX-looking content                       | AST emits safe string literal, not executable JSX              | Auto      |
+| UT-CODEGEN-004  | P1       | Inspect generated file list                                  | Paths are sorted and content hashes match contents             | Auto      |
+| UT-CODEGEN-005  | P0       | Search brand hex outside `tokens.css`                        | Brand literal is isolated to token output                      | Auto      |
+| UT-CODEGEN-006  | P1       | No visual component is matched                               | Accessible hidden visual placeholder is generated              | Auto      |
+| UT-CODEGEN-007  | P1       | Inspect manifest/report                                      | Versions/counts/skipped validators are explicit                | Auto      |
+| UT-CODEGEN-008  | P0       | Materialize generated path containing traversal              | Output writer rejects path escaping target root                | Auto      |
+| UT-CODEGEN-009  | P0       | Generation Plan contains mixed default/named imports         | Babel AST emits valid `import Default, { Named }` syntax       | Auto      |
+| B03-CODEGEN-001 | P0       | Plan contains registered marketing Sections                  | Stable wrapper modules and page imports are emitted            | Auto      |
+| B03-REPORT-001  | P0       | Report receives every match strategy                         | Five strategy counters reflect actual results                  | Auto      |
 
 ## 6. Engine pipeline and API
 
 | ID          | Priority | Scenario and input                                                              | Expected result                                                        | Execution |
 | ----------- | -------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
-| BL-PIPE-001 | P0       | Analyze flagship request                                                        | 8 nodes, 3 component nodes, 3 exact, 0 manual                          | Auto      |
-| BL-PIPE-002 | P0       | Generate flagship with fixed time                                               | 12 files and stable generation ID                                      | Auto      |
+| BL-PIPE-001 | P0       | Analyze flagship request                                                        | 12 nodes, 7 component nodes, 7 Exact, 0 Manual                         | Auto      |
+| BL-PIPE-002 | P0       | Generate flagship with fixed time                                               | 16 files, 4 Sections, and stable generation ID                         | Auto      |
 | BL-PIPE-003 | P0       | Unknown component in otherwise valid Hero                                       | Manual review propagates to analysis, plan and report                  | Auto      |
 | BL-PIPE-004 | P0       | Missing Hero                                                                    | Typed Generation Plan error is thrown                                  | Auto      |
 | BL-PIPE-005 | P0       | Invalid Registry allowlist                                                      | Typed Registry error is thrown                                         | Auto      |
@@ -120,10 +134,9 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | ID     | Priority | User steps                                                           | Expected result                                                                    | Execution  |
 | ------ | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
 | UI-001 | P0       | Open Studio before generation                                        | Project, tree, workflow, CTA and empty Inspector are visible                       | Auto/jsdom |
-| UI-002 | P0       | Click `Generate flagship` and Engine resolves                        | Hero preview, generation ID, 3/3 matches and connected status appear               | Auto/jsdom |
+| UI-002 | P0       | Click `Generate flagship` and Engine resolves                        | Hero preview, generation ID, 7/7 matches and connected status appear               | Auto/jsdom |
 | UI-003 | P0       | Generation Promise remains pending                                   | Run controls are disabled and pending labels are shown                             | Auto/jsdom |
 | UI-004 | P0       | Engine rejects generation                                            | Error title, structured message, request ID and retry control appear               | Auto/jsdom |
-| UI-005 | P1       | Generate, then open `Generated code`                                 | Generated-file navigation and Hero TSX are displayed                               | Auto/jsdom |
 | UI-006 | P1       | Select `tokens.css`                                                  | Code panel changes to token content                                                | Auto/jsdom |
 | UI-007 | P1       | Switch desktop -> tablet -> mobile                                   | Preview frame receives the selected device state/class                             | Auto/jsdom |
 | UI-008 | P0       | Client receives non-2xx structured Engine response                   | Service throws typed error preserving code/message/request ID                      | Auto       |
@@ -136,32 +149,34 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 
 ## 8. Integration, build and security
 
-| ID      | Priority | Scenario                                                            | Expected result                      | Execution            |
-| ------- | -------- | ------------------------------------------------------------------- | ------------------------------------ | -------------------- |
-| INT-001 | P0       | Run entire flagship pipeline in process                             | Expected Eval match map is satisfied | Auto                 |
-| INT-002 | P0       | Type-check materialized generated project                           | No TypeScript diagnostics            | Build script         |
-| INT-003 | P0       | Vite-build materialized generated project                           | Production build succeeds            | Build script         |
-| INT-004 | P0       | Build Engine and Studio                                             | Both production bundles succeed      | `pnpm build`         |
-| SEC-001 | P0       | Registry prefix resembles allowlisted package but is not child path | Import is rejected                   | Auto                 |
-| SEC-002 | P0       | Generated output path tries `../` traversal                         | Materialization is rejected          | Auto                 |
-| SEC-003 | P0       | HTML metadata contains injection payload                            | Output is escaped                    | Auto                 |
-| SEC-004 | P1       | Authorization header is logged                                      | Logger configuration redacts header  | Configuration review |
-| SEC-005 | P2       | Preview posts message from foreign origin                           | Message is ignored                   | Phase 4              |
+| ID          | Priority | Scenario                                                            | Expected result                                     | Execution            |
+| ----------- | -------- | ------------------------------------------------------------------- | --------------------------------------------------- | -------------------- |
+| INT-001     | P0       | Run entire flagship pipeline in process                             | Seven Exact matches and four Sections are satisfied | Auto                 |
+| INT-002     | P0       | Type-check materialized generated project                           | No TypeScript diagnostics                           | Build script         |
+| INT-003     | P0       | Vite-build materialized generated project                           | Production build succeeds                           | Build script         |
+| INT-004     | P0       | Build Engine and Studio                                             | Both production bundles succeed                     | `pnpm build`         |
+| SEC-001     | P0       | Registry prefix resembles allowlisted package but is not child path | Import is rejected                                  | Auto                 |
+| SEC-002     | P0       | Generated output path tries `../` traversal                         | Materialization is rejected                         | Auto                 |
+| SEC-003     | P0       | HTML metadata contains injection payload                            | Output is escaped                                   | Auto                 |
+| SEC-004     | P1       | Authorization header is logged                                      | Logger configuration redacts header                 | Configuration review |
+| SEC-005     | P2       | Preview posts message from foreign origin                           | Message is ignored                                  | Phase 4              |
+| B03-SEC-001 | P0       | Registry child path contains a traversal segment                    | Import is rejected before matching                  | Auto                 |
 
 ## 9. Fixed evaluation and CI
 
-| ID         | Priority | Scenario                                  | Expected result                                           | Execution        |
-| ---------- | -------- | ----------------------------------------- | --------------------------------------------------------- | ---------------- |
-| B01-UT-001 | P0       | Eval suite contains duplicate case ID     | Suite rejects duplicate before execution                  | Auto             |
-| B01-UT-002 | P0       | Cases are supplied in different orders    | Normalized report order and bytes are identical           | Auto             |
-| B01-UT-003 | P0       | Expected match differs from actual result | Case fails with node-level expected/actual difference     | Auto             |
-| B01-UT-004 | P0       | Invalid case omits expected error code    | Contract rejects ambiguous invalid fixture                | Auto             |
-| B01-UT-005 | P1       | Valid/degraded case declares error code   | Contract rejects contradictory fixture                    | Auto             |
-| B01-BL-001 | P0       | Run fixed valid flagship case             | Generation succeeds with three labeled exact matches      | `pnpm evals`     |
-| B01-BL-002 | P0       | Run fixed unknown-component case          | Generation succeeds with explainable manual-review result | `pnpm evals`     |
-| B01-BL-003 | P0       | Run fixed malformed-design case           | Expected `DESIGN_SCHEMA_INVALID` is observed              | `pnpm evals`     |
-| B01-CI-001 | P0       | GitHub Actions quality job                | Pinned install, coverage, check and Eval complete         | Actions workflow |
-| B01-CI-002 | P1       | Eval returns a failed case                | Job fails after writing uploadable diagnostic report      | Actions workflow |
+| ID           | Priority | Scenario                                       | Expected result                                           | Execution        |
+| ------------ | -------- | ---------------------------------------------- | --------------------------------------------------------- | ---------------- |
+| B01-UT-001   | P0       | Eval suite contains duplicate case ID          | Suite rejects duplicate before execution                  | Auto             |
+| B01-UT-002   | P0       | Cases are supplied in different orders         | Normalized report order and bytes are identical           | Auto             |
+| B01-UT-003   | P0       | Expected match differs from actual result      | Case fails with node-level expected/actual difference     | Auto             |
+| B01-UT-004   | P0       | Invalid case omits expected error code         | Contract rejects ambiguous invalid fixture                | Auto             |
+| B01-UT-005   | P1       | Valid/degraded case declares error code        | Contract rejects contradictory fixture                    | Auto             |
+| B01-BL-001   | P0       | Run fixed valid flagship case                  | Generation succeeds with seven labeled exact matches      | `pnpm evals`     |
+| B01-BL-002   | P0       | Run fixed unknown-component case               | Generation succeeds with explainable manual-review result | `pnpm evals`     |
+| B01-BL-003   | P0       | Run fixed malformed-design case                | Expected `DESIGN_SCHEMA_INVALID` is observed              | `pnpm evals`     |
+| B01-CI-001   | P0       | GitHub Actions quality job                     | Pinned install, coverage, check and Eval complete         | Actions workflow |
+| B01-CI-002   | P1       | Eval returns a failed case                     | Job fails after writing uploadable diagnostic report      | Actions workflow |
+| B03-EVAL-001 | P0       | Compute accuracy from explicitly labeled nodes | Top-1 reports exact numerator and denominator             | `pnpm evals`     |
 
 ## 10. Exit criteria
 

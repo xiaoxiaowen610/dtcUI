@@ -32,6 +32,16 @@ function componentForMatch(
   return registry.components.find((component) => component.id === match.componentId)
 }
 
+function safePascalIdentifier(value: string, fallback: string): string {
+  const candidate = value
+    .split(/[^A-Za-z0-9]+/)
+    .filter(Boolean)
+    .map((part) => `${part[0]?.toUpperCase() ?? ''}${part.slice(1)}`)
+    .join('')
+  const prefixed = /^[A-Za-z_$]/.test(candidate) ? candidate : `Section${candidate}`
+  return prefixed || fallback
+}
+
 export function createGenerationPlan(
   document: DesignDocument,
   registry: ComponentRegistryManifest,
@@ -69,7 +79,9 @@ export function createGenerationPlan(
 
   const heroNodeIds = new Set(walkDesignNodes(hero).map((node) => node.id))
   const exactMatches = matches.filter(
-    (match) => match.strategy === 'exact-component' && heroNodeIds.has(match.nodeId)
+    (match) =>
+      ['exact-component', 'adapted-component'].includes(match.strategy) &&
+      heroNodeIds.has(match.nodeId)
   )
   const nodeById = new Map(walkDesignNodes(hero).map((node) => [node.id, node]))
   const imports = new Map<string, { defaultName?: string; names: Set<string> }>()
@@ -95,7 +107,7 @@ export function createGenerationPlan(
         label: node.content?.kind === 'text' ? node.content.value : component.displayName,
         exportName: component.import.exportName,
         importPath: component.import.path,
-        props: node.component?.props ?? {}
+        props: match.adaptedProps ?? node.component?.props ?? {}
       })
     }
 
@@ -122,6 +134,39 @@ export function createGenerationPlan(
         suggestedActions: ['Select a registered component or a safe native fallback.']
       }))
   ]
+
+  const matchByNodeId = new Map(matches.map((match) => [match.nodeId, match]))
+  const usedFunctionNames = new Set<string>(['Hero'])
+  const sections = document.root.children
+    .filter((node) => node.type === 'component')
+    .flatMap((node) => {
+      const match = matchByNodeId.get(node.id)
+      if (!match || !['exact-component', 'adapted-component'].includes(match.strategy)) return []
+      const component = componentForMatch(match, registry)
+      if (!component) return []
+
+      const baseName = safePascalIdentifier(node.name, `Section${stableHash(node.id)}`)
+      let functionName = baseName
+      if (functionName === component.import.exportName || usedFunctionNames.has(functionName)) {
+        functionName = `${baseName}Section`
+      }
+      if (functionName === component.import.exportName || usedFunctionNames.has(functionName)) {
+        functionName = `${baseName}Section${stableHash(node.id)}`
+      }
+      usedFunctionNames.add(functionName)
+
+      return [
+        {
+          nodeId: node.id,
+          functionName,
+          fileName: `${functionName}.tsx`,
+          exportName: component.import.exportName,
+          importPath: component.import.path,
+          importStyle: component.import.style,
+          props: match.adaptedProps ?? node.component?.props ?? {}
+        }
+      ]
+    })
 
   const sourceHash = stableHash(stableStringify(document))
 
@@ -161,6 +206,7 @@ export function createGenerationPlan(
       actions: actions.sort((left, right) => left.nodeId.localeCompare(right.nodeId)),
       ...(visual ? { visual } : {})
     },
+    sections,
     diagnostics
   }
 }

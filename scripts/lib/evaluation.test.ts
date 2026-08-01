@@ -51,8 +51,30 @@ describe('fixed evaluation suite', () => {
       failed: 0,
       valid: 2,
       degraded: 1,
-      invalid: 3
+      invalid: 3,
+      matching: { labeledNodes: 13, correctTop1: 13, top1Accuracy: 1 }
     })
     expect(result.cases.every((evalCase) => evalCase.status === 'passed')).toBe(true)
+  })
+
+  it('B03-EVAL-001 computes Top-1 accuracy only from explicitly labeled nodes', () => {
+    const result = runEvaluation([
+      {
+        ...fixedEvalCases[0],
+        expected: {
+          ...fixedEvalCases[0]!.expected,
+          expectedMatches: {
+            'hero-primary-action': 'external-button',
+            'hero-secondary-action': 'wrong-component'
+          }
+        }
+      }
+    ])
+
+    expect(result.totals.matching).toEqual({
+      labeledNodes: 2,
+      correctTop1: 1,
+      top1Accuracy: 0.5
+    })
   })
 })

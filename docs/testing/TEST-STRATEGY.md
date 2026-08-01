@@ -1,9 +1,10 @@
-# ForgeUI Phase 1 Test Strategy
+# ForgeUI Through Batch 03 Test Strategy
 
 ## 1. Objective
 
-Verify that the Phase 1 vertical slice is not merely renderable, but deterministic, explainable,
-safe on invalid input, contract-compatible across Studio and Engine, and buildable as generated code.
+Verify that the implemented vertical slice through deterministic Token and Component matching is not
+merely renderable, but deterministic, explainable, safe on invalid input, contract-compatible across
+Studio and Engine, and buildable as generated code.
 
 The strategy follows the repository trust model:
 
@@ -26,7 +27,9 @@ Automated in this phase:
 - pure utility and runtime-schema unit tests;
 - Design IR normalization, limits, ordering, and lookup;
 - Token path/value validation, Alias graph, conflict diagnostics, deterministic CSS, and performance budget;
-- Registry validation, safe identifiers, named/default imports, prop compatibility, and manual-review degradation;
+- Registry validation, safe identifiers/imports, Props/Slot/Capability/Token hard constraints,
+  declarative Adapters, registered Recipes, deterministic semantic ranking, native fallback, and
+  manual-review degradation;
 - Generation Plan success, Hero uniqueness, failure, import, action, visual, and diagnostic behavior;
 - generated-file determinism, escaping, ordering, token boundaries, and manifest/report behavior;
 - Engine business pipeline, shared body limit, and Fastify API contract tests;
@@ -34,10 +37,11 @@ Automated in this phase:
   file-selection, and device interactions;
 - generated TypeScript and real Vite production build;
 - Engine and Studio production builds;
-- fixed valid/degraded/invalid evaluations with deterministic machine-readable reports;
+- fixed valid/degraded/invalid evaluations with deterministic machine-readable reports and labeled
+  Top-1 component accuracy;
 - pinned GitHub Actions execution and quality evidence upload.
 
-Explicitly out of the Phase 1 pass rate:
+Explicitly out of the Batch 03 pass rate:
 
 - Playwright screenshot baselines and pixel diffs;
 - real-browser layout overlap/overflow assertions;
@@ -64,8 +68,8 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 ## 4. Prioritization
 
 - P0: security boundary, deterministic output, schema/limit rejection, safe Registry bindings,
-  exact matching, unambiguous Hero generation, Engine API, Studio generation success/error/retry,
-  generated build.
+  hard constraints and five-stage matching, unambiguous Hero/Section generation, Engine API, Studio
+  generation success/error/retry, generated build.
 - P1: sorting, metadata fallbacks, optional props, file selection, device switching, CORS.
 - P2: visual polish, browser-specific layout, timing distributions, accessibility automation.
 

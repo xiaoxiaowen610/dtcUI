@@ -1,6 +1,6 @@
 # Batch 03：Component Matching 与安全降级
 
-状态：待开始
+状态：已完成
 
 分支：`agent/batch-03-component-matching`
 
@@ -51,4 +51,14 @@
 
 ## 实测结果
 
-待本批完成后填写。
+- Registry 合同已覆盖 8 个基础组件、4 个营销 Section、声明式 Adapter 与白名单 Recipe。
+- 五级匹配路径均由可执行单测覆盖；Exact 的 Props、Slot、Capability、Required Token
+  任一硬约束失败均无法被语义分数恢复。
+- 语义权重固定为 `35/25/20/15/5`，阈值为 `>=85`、`70–84`、`<70`，相同分数按
+  Component ID 稳定排序。
+- Flagship：12 个节点、7 个可匹配节点、7 个 Exact、4 个 Section 模块、16 个生成文件。
+- 固定 Eval：6/6 通过；13/13 人工标注节点 Top-1 正确（100.0%，仅代表当前固定集）。
+- Coverage：Statements 91.05%、Branches 81.38%、Functions 94.87%、Lines 92.50%。
+- `pnpm validate:flagship`：生成项目 TypeScript 与 Vite Production Build 均通过。
+- 实测发现并修复 Section Wrapper 与 Registry Export 同名导致的 TypeScript 声明冲突；
+  Wrapper 现在使用稳定且无冲突的函数名。

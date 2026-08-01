@@ -15,7 +15,7 @@ export function analyzeDesign(request: unknown): AnalyzeResponse {
   const document = createDesignDocument(parsed.input)
   const tokenResolution = resolveTokens(document.tokens)
   const registry = validateRegistry(parsed.registry)
-  const matches = matchComponents(document, registry)
+  const matches = matchComponents(document, registry, tokenResolution)
   const nodes = walkDesignNodes(document.root)
   const diagnostics: GenerationDiagnostic[] = [
     ...tokenResolution.diagnostics,

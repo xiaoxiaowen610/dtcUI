@@ -63,7 +63,7 @@ describe('ForgeUI Studio', () => {
     await user.click(screen.getByRole('button', { name: /Generate flagship/ }))
 
     expect(await screen.findByRole('heading', { name: generated.plan.hero.title })).toBeVisible()
-    expect(screen.getByText('3/3')).toBeInTheDocument()
+    expect(screen.getByText('7/7')).toBeInTheDocument()
     expect(screen.getByText(/Engine connected/)).toBeInTheDocument()
     expect(screen.getByText(generated.plan.generationId)).toBeInTheDocument()
   })

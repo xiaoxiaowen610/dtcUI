@@ -43,6 +43,32 @@ describe('Generation Plan business rules', () => {
         names: ['Button', 'ProductPreview']
       }
     ])
+    expect(plan.sections).toEqual([
+      expect.objectContaining({
+        nodeId: 'logo-cloud',
+        functionName: 'CustomerLogoCloud',
+        fileName: 'CustomerLogoCloud.tsx',
+        exportName: 'LogoCloud'
+      }),
+      expect.objectContaining({
+        nodeId: 'feature-grid',
+        functionName: 'FeatureGridSection',
+        fileName: 'FeatureGridSection.tsx',
+        exportName: 'FeatureGrid'
+      }),
+      expect.objectContaining({
+        nodeId: 'testimonial',
+        functionName: 'CustomerTestimonial',
+        fileName: 'CustomerTestimonial.tsx',
+        exportName: 'TestimonialSection'
+      }),
+      expect.objectContaining({
+        nodeId: 'cta-section',
+        functionName: 'ClosingCallToAction',
+        fileName: 'ClosingCallToAction.tsx',
+        exportName: 'CtaSection'
+      })
+    ])
     expect(plan.tokenResolution.tokens.length).toBeGreaterThan(3)
   })
 
@@ -55,6 +81,7 @@ describe('Generation Plan business rules', () => {
 
   it('BL-PLAN-003 retains manual-review matches as non-blocking diagnostics', () => {
     inputFixture.root.children[0]!.children![3]!.componentKey = 'unknown.button'
+    inputFixture.root.children[0]!.children![3]!.semantic = 'unknown-widget'
     const plan = planFor()
 
     expect(plan.diagnostics).toContainEqual(

@@ -40,6 +40,7 @@ const plan: GenerationPlan = {
       }
     ]
   },
+  sections: [],
   diagnostics: []
 }
 
@@ -202,5 +203,89 @@ describe('generateProject', () => {
     expect(hero.content).toContain(
       'import ProductPreview, { Button } from "@forge-ui/example-external-ui";'
     )
+  })
+
+  it('B03-CODEGEN-001 emits registered Section modules and wires them into the page', () => {
+    const project = generateProject(
+      {
+        ...plan,
+        sections: [
+          {
+            nodeId: 'feature-grid',
+            functionName: 'FeatureGridSection',
+            fileName: 'FeatureGridSection.tsx',
+            exportName: 'FeatureGrid',
+            importPath: '@forge-ui/example-external-ui',
+            importStyle: 'named',
+            props: { title: 'Trustworthy output', columns: 4 }
+          }
+        ]
+      },
+      registry,
+      options
+    )
+    const section = project.files.find(
+      (generatedFile) => generatedFile.path === 'src/sections/FeatureGridSection.tsx'
+    )!
+    const page = project.files.find(
+      (generatedFile) => generatedFile.path === 'src/LandingPage.tsx'
+    )!
+
+    expect(section.content).toContain(
+      'import { FeatureGrid } from "@forge-ui/example-external-ui";'
+    )
+    expect(section.content).toContain(
+      '<FeatureGrid data-forge-node-id="feature-grid" columns={4} title="Trustworthy output" />'
+    )
+    expect(page.content).toContain(
+      "import { FeatureGridSection } from './sections/FeatureGridSection'"
+    )
+    expect(page.content).toContain('<FeatureGridSection />')
+  })
+
+  it('B03-REPORT-001 reports every component-matching strategy from real match data', () => {
+    const project = generateProject(plan, registry, {
+      ...options,
+      matches: [
+        options.matches[0]!,
+        {
+          ...options.matches[0]!,
+          nodeId: 'adapted',
+          strategy: 'adapted-component' as const
+        },
+        {
+          nodeId: 'recipe',
+          strategy: 'registered-recipe' as const,
+          confidence: 'medium' as const,
+          reasons: [],
+          incompatibilities: [],
+          warnings: []
+        },
+        {
+          nodeId: 'native',
+          strategy: 'native-element' as const,
+          confidence: 'medium' as const,
+          reasons: [],
+          incompatibilities: [],
+          warnings: []
+        },
+        {
+          nodeId: 'manual',
+          strategy: 'manual-review' as const,
+          confidence: 'low' as const,
+          reasons: [],
+          incompatibilities: [],
+          warnings: []
+        }
+      ]
+    })
+
+    expect(project.report.matches).toEqual({
+      exact: 1,
+      adapted: 1,
+      recipes: 1,
+      native: 1,
+      manual: 1
+    })
   })
 })

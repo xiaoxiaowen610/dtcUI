@@ -18,9 +18,9 @@ describe('flagship pipeline', () => {
     const result = analyzeDesign({ input: inputFixture, registry: registryFixture })
 
     expect(result.summary).toEqual({
-      totalNodes: 8,
-      componentNodes: 3,
-      exactMatches: 3,
+      totalNodes: 12,
+      componentNodes: 7,
+      exactMatches: 7,
       manualReview: 0
     })
     expect(result.tokenResolution.summary).toEqual({
@@ -33,30 +33,40 @@ describe('flagship pipeline', () => {
     expect(result.diagnostics.every((item) => !item.blocking)).toBe(true)
   })
 
-  it('BL-PIPE-002 runs input -> plan -> a stable 12-file project', () => {
+  it('BL-PIPE-002 runs input -> plan -> a stable 16-file project', () => {
     const result = generateDesign(
       { input: inputFixture, registry: registryFixture },
       '2026-08-01T00:00:00.000Z'
     )
 
-    expect(result.summary).toMatchObject({ componentNodes: 3, exactMatches: 3, manualReview: 0 })
+    expect(result.summary).toMatchObject({ componentNodes: 7, exactMatches: 7, manualReview: 0 })
     expect(result.plan.hero.title).toBe('Operate at the speed of thought.')
-    expect(result.project.files).toHaveLength(12)
+    expect(result.plan.sections).toHaveLength(4)
+    expect(result.project.files).toHaveLength(16)
+    expect(result.project.files.map((file) => file.path)).toEqual(
+      expect.arrayContaining([
+        'src/sections/CustomerLogoCloud.tsx',
+        'src/sections/FeatureGridSection.tsx',
+        'src/sections/CustomerTestimonial.tsx',
+        'src/sections/ClosingCallToAction.tsx'
+      ])
+    )
     expect(result.project.manifest.createdAt).toBe('2026-08-01T00:00:00.000Z')
   })
 
   it('BL-PIPE-003 propagates manual review through analysis, plan and report', () => {
     inputFixture.root.children[0]!.children![3]!.componentKey = 'external.unknown'
+    inputFixture.root.children[0]!.children![3]!.semantic = 'unknown-widget'
     const result = generateDesign({ input: inputFixture, registry: registryFixture })
 
-    expect(result.summary).toMatchObject({ exactMatches: 2, manualReview: 1 })
+    expect(result.summary).toMatchObject({ exactMatches: 6, manualReview: 1 })
     expect(result.diagnostics).toContainEqual(
       expect.objectContaining({ code: 'COMPONENT_MANUAL_REVIEW' })
     )
     expect(result.plan.diagnostics).toContainEqual(
       expect.objectContaining({ code: 'COMPONENT_MANUAL_REVIEW' })
     )
-    expect(result.project.report.matches).toMatchObject({ exact: 2, manual: 1 })
+    expect(result.project.report.matches).toMatchObject({ exact: 6, manual: 1 })
   })
 
   it('BL-PIPE-004 rejects a request without a Hero', () => {

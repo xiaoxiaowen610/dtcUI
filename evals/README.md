@@ -15,3 +15,5 @@ The suite currently contains:
 Run `pnpm evals`. The deterministic machine-readable report is written to
 `.forge-output/evaluation-report.json` for CI artifact upload. Runtime duration and wall-clock time are
 deliberately excluded from that report; performance evidence is handled by the release-evidence batch.
+Top-1 component accuracy is calculated only from explicitly labeled `expectedMatches` entries, so
+unlabeled and invalid nodes never inflate or dilute the denominator.

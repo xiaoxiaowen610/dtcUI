@@ -1,17 +1,25 @@
 {
-  "name": "AI SaaS Flagship Phase 1",
+  "name": "AI SaaS Flagship through Batch 03",
   "kind": "valid",
   "expected": {
     "buildSuccess": true,
     "expectedMatches": {
+      "cta-section": "section-cta",
+      "feature-grid": "section-feature-grid",
       "hero-primary-action": "external-button",
       "hero-secondary-action": "external-button",
-      "hero-product-preview": "external-product-preview"
+      "hero-product-preview": "external-product-preview",
+      "logo-cloud": "section-logo-cloud",
+      "testimonial": "section-testimonial"
     },
     "expectedStrategies": {
+      "cta-section": "exact-component",
+      "feature-grid": "exact-component",
       "hero-primary-action": "exact-component",
       "hero-secondary-action": "exact-component",
-      "hero-product-preview": "exact-component"
+      "hero-product-preview": "exact-component",
+      "logo-cloud": "exact-component",
+      "testimonial": "exact-component"
     }
   }
 }

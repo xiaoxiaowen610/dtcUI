@@ -35,6 +35,11 @@ export interface EvaluationReport {
     valid: number
     degraded: number
     invalid: number
+    matching: {
+      labeledNodes: number
+      correctTop1: number
+      top1Accuracy: number
+    }
   }
   cases: EvalCaseResult[]
 }
@@ -188,8 +193,19 @@ export function validateEvalCases(input: unknown[]): EvalCase[] {
 }
 
 export function runEvaluation(input: unknown[]): EvaluationReport {
-  const cases = validateEvalCases(input).map(evaluateCase)
+  const validatedCases = validateEvalCases(input)
+  const cases = validatedCases.map(evaluateCase)
   const passed = cases.filter((evalCase) => evalCase.status === 'passed').length
+  let labeledNodes = 0
+  let correctTop1 = 0
+
+  for (const [index, evalCase] of validatedCases.entries()) {
+    const actual = cases[index]!.actual.matches
+    for (const [nodeId, componentId] of Object.entries(evalCase.expected.expectedMatches ?? {})) {
+      labeledNodes += 1
+      if (actual[nodeId] === componentId) correctTop1 += 1
+    }
+  }
 
   return {
     schemaVersion: '1.0',
@@ -200,7 +216,12 @@ export function runEvaluation(input: unknown[]): EvaluationReport {
       failed: cases.length - passed,
       valid: cases.filter((evalCase) => evalCase.kind === 'valid').length,
       degraded: cases.filter((evalCase) => evalCase.kind === 'degraded').length,
-      invalid: cases.filter((evalCase) => evalCase.kind === 'invalid').length
+      invalid: cases.filter((evalCase) => evalCase.kind === 'invalid').length,
+      matching: {
+        labeledNodes,
+        correctTop1,
+        top1Accuracy: labeledNodes === 0 ? 0 : Number((correctTop1 / labeledNodes).toFixed(4))
+      }
     },
     cases
   }
