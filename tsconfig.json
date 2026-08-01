@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "useDefineForClassFields": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "paths": {
+      "@forge-ui/contracts": ["./packages/contracts/src/index.ts"],
+      "@forge-ui/shared": ["./packages/shared/src/index.ts"],
+      "@forge-ui/design-ir": ["./packages/design-ir/src/index.ts"],
+      "@forge-ui/component-registry": ["./packages/component-registry/src/index.ts"],
+      "@forge-ui/generation-plan": ["./packages/generation-plan/src/index.ts"],
+      "@forge-ui/code-generator": ["./packages/code-generator/src/index.ts"],
+      "@forge-ui/example-external-ui": ["./packages/example-external-ui/src/index.tsx"]
+    },
+    "types": ["node", "vite/client"]
+  },
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx",
+    "packages/**/*.ts",
+    "packages/**/*.tsx",
+    "scripts/**/*.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", "**/dist", ".forge-output"]
+}

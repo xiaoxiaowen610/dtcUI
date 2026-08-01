@@ -1,0 +1,13 @@
+{
+  "name": "@forge-ui/design-ir",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@forge-ui/contracts": "workspace:*",
+    "@forge-ui/shared": "workspace:*"
+  }
+}

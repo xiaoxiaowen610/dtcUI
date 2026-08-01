@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "registryId": "forgeui-example-external-ui",
+  "registryVersion": "1.0.0",
+  "package": {
+    "name": "@forge-ui/example-external-ui",
+    "version": "0.1.0",
+    "allowedImportRoots": ["@forge-ui/example-external-ui"]
+  },
+  "components": [
+    {
+      "id": "external-button",
+      "displayName": "Button",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Button",
+        "style": "named"
+      },
+      "sourceKeys": ["external.button"],
+      "semantics": ["primary-action", "secondary-action", "link"],
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": ["primary", "secondary"]
+        },
+        { "name": "href", "type": "string" }
+      ],
+      "capabilities": ["action", "link", "content"]
+    },
+    {
+      "id": "external-product-preview",
+      "displayName": "ProductPreview",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "ProductPreview",
+        "style": "named"
+      },
+      "sourceKeys": ["external.product-preview"],
+      "semantics": ["product-preview", "dashboard-preview"],
+      "props": [],
+      "capabilities": ["visual", "responsive"]
+    },
+    {
+      "id": "external-badge",
+      "displayName": "Badge",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Badge",
+        "style": "named"
+      },
+      "sourceKeys": ["external.badge"],
+      "semantics": ["badge", "eyebrow"],
+      "props": [],
+      "capabilities": ["content", "children"]
+    }
+  ]
+}

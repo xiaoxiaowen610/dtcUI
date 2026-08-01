@@ -1,0 +1,17 @@
+{
+  "name": "AI SaaS Flagship Phase 1",
+  "kind": "valid",
+  "expected": {
+    "buildSuccess": true,
+    "expectedMatches": {
+      "hero-primary-action": "external-button",
+      "hero-secondary-action": "external-button",
+      "hero-product-preview": "external-product-preview"
+    },
+    "expectedStrategies": {
+      "hero-primary-action": "exact-component",
+      "hero-secondary-action": "exact-component",
+      "hero-product-preview": "exact-component"
+    }
+  }
+}

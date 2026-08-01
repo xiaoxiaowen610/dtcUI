@@ -1,0 +1,21 @@
+{
+  "name": "@forge-ui/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --import tsx --watch src/server.ts",
+    "build": "tsup --config tsup.config.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@forge-ui/code-generator": "workspace:*",
+    "@forge-ui/component-registry": "workspace:*",
+    "@forge-ui/contracts": "workspace:*",
+    "@forge-ui/design-ir": "workspace:*",
+    "@forge-ui/generation-plan": "workspace:*",
+    "fastify": "^5.11.0",
+    "zod": "^4.4.3"
+  }
+}

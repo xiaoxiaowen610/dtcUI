@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "documentId": "forgeui-ai-saas-flagship",
+  "source": {
+    "type": "preset",
+    "name": "AI SaaS Flagship"
+  },
+  "metadata": {
+    "title": "Pulse AI — Operate at the speed of thought",
+    "description": "A generated AI operations landing page powered by ForgeUI.",
+    "locale": "en"
+  },
+  "tokens": [
+    {
+      "path": "color.brand.primary",
+      "type": "color",
+      "value": "#7c5cff",
+      "level": "semantic"
+    },
+    {
+      "path": "color.brand.secondary",
+      "type": "color",
+      "value": "#39d7ff",
+      "level": "semantic"
+    },
+    {
+      "path": "space.section.block",
+      "type": "dimension",
+      "value": { "value": 6, "unit": "rem" },
+      "level": "semantic"
+    }
+  ],
+  "assets": [],
+  "root": {
+    "id": "page-root",
+    "name": "AI SaaS Landing Page",
+    "type": "page",
+    "children": [
+      {
+        "id": "hero",
+        "name": "Hero",
+        "type": "section",
+        "semantic": "hero",
+        "layout": {
+          "display": "grid",
+          "columns": 2,
+          "align": "center",
+          "gap": { "value": 5, "unit": "rem" }
+        },
+        "responsive": {
+          "layout": {
+            "mobile": { "columns": 1 },
+            "desktop": { "columns": 2 }
+          }
+        },
+        "children": [
+          {
+            "id": "hero-eyebrow",
+            "name": "Hero Eyebrow",
+            "type": "text",
+            "semantic": "hero-eyebrow",
+            "content": { "kind": "text", "value": "AI OPERATIONS, COMPOSED" }
+          },
+          {
+            "id": "hero-title",
+            "name": "Hero Title",
+            "type": "text",
+            "semantic": "hero-title",
+            "content": { "kind": "text", "value": "Operate at the speed of thought." },
+            "accessibility": { "headingLevel": 1 }
+          },
+          {
+            "id": "hero-description",
+            "name": "Hero Description",
+            "type": "text",
+            "semantic": "hero-description",
+            "content": {
+              "kind": "text",
+              "value": "Pulse turns scattered signals into dependable workflows—mapped to your design system, generated with guardrails, and ready to validate."
+            }
+          },
+          {
+            "id": "hero-primary-action",
+            "name": "Primary CTA",
+            "type": "component",
+            "semantic": "primary-action",
+            "componentKey": "external.button",
+            "props": { "variant": "primary", "href": "#start" },
+            "content": { "kind": "text", "value": "Start building" }
+          },
+          {
+            "id": "hero-secondary-action",
+            "name": "Secondary CTA",
+            "type": "component",
+            "semantic": "secondary-action",
+            "componentKey": "external.button",
+            "props": { "variant": "secondary", "href": "#architecture" },
+            "content": { "kind": "text", "value": "View architecture" }
+          },
+          {
+            "id": "hero-product-preview",
+            "name": "Product Preview",
+            "type": "component",
+            "semantic": "product-preview",
+            "componentKey": "external.product-preview",
+            "props": {},
+            "accessibility": { "label": "Product analytics dashboard preview" }
+          }
+        ]
+      }
+    ]
+  }
+}

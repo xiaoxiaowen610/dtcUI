@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  esbuild: true
+
+overrides:
+  '@babel/generator': 7.29.7
+  '@babel/parser': 7.29.7
+  '@babel/types': 7.29.7

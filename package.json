@@ -1,0 +1,33 @@
+{
+  "name": "forge-ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n engine,studio -c cyan,magenta \"pnpm --filter @forge-ui/engine dev\" \"pnpm --filter @forge-ui/studio dev\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "pnpm typecheck && pnpm --filter @forge-ui/engine build && pnpm --filter @forge-ui/studio build",
+    "generate:flagship": "node --import tsx scripts/generate-flagship.ts",
+    "validate:flagship": "node --import tsx scripts/validate-flagship.ts",
+    "check": "pnpm typecheck && pnpm test && pnpm build && pnpm validate:flagship"
+  },
+  "devDependencies": {
+    "@types/babel__generator": "^7.27.0",
+    "@types/node": "^26.1.2",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "concurrently": "^10.0.4",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.1",
+    "tsup": "^8.5.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.0",
+    "vitest": "^4.1.10"
+  }
+}
