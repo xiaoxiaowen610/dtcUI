@@ -1,6 +1,6 @@
 # Batch 05：Validation、隔离 Preview 与 Export
 
-状态：实现完成，等待分支 CI 实测
+状态：实现完成，分支质量门禁通过
 
 分支：`agent/batch-05-validation-export`
 
@@ -50,4 +50,15 @@ Browser/Visual 只有在固定浏览器、字体、locale、timezone、DPR 和 v
 
 ## 实测结果
 
-等待 `agent/batch-05-validation-export` 分支质量流水线完成后填写。
+GitHub Actions `quality`（run #19）通过：
+
+- Frozen install：通过（11 个 workspace project）
+- TypeScript：通过
+- Test files：20/20 通过
+- Tests：171/171 通过
+- Coverage：Statements 86.87%、Branches 77.11%、Functions 90.14%、Lines 87.62%
+- Engine build：通过
+- Studio production build：通过
+- Flagship validation：7 个 exact matches，TypeScript/Vite build 通过
+- Eval：6/6 cases，Top-1 13/13（100%）
+- Visual：固定浏览器环境未配置，按设计记为 `skipped` 并说明原因；未冒充视觉通过
