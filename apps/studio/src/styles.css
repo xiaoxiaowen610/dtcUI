@@ -47,7 +47,7 @@ button:focus-visible {
 
 .appShell {
   display: grid;
-  grid-template-columns: 250px minmax(680px, 1fr) 300px;
+  grid-template-columns: 300px minmax(680px, 1fr) 320px;
   grid-template-rows: 58px calc(100vh - 58px);
   min-height: 100vh;
   background: var(--canvas);
@@ -56,7 +56,7 @@ button:focus-visible {
 .topbar {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 250px 1fr auto;
+  grid-template-columns: 300px 1fr auto;
   align-items: center;
   border-bottom: 1px solid var(--line);
   background: rgba(8, 10, 15, 0.96);
@@ -168,6 +168,7 @@ button:focus-visible {
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--line);
+  overflow: auto;
 }
 .railHeader,
 .panelHeader {
@@ -191,6 +192,25 @@ button:focus-visible {
   color: var(--muted);
   background: none;
   cursor: pointer;
+}
+
+.importFileButton {
+  position: relative;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--muted-strong);
+  font-size: 8px;
+  cursor: pointer;
+}
+.importFileButton input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .projectCard {
@@ -231,6 +251,64 @@ button:focus-visible {
   color: var(--muted);
   background: var(--canvas);
   font-size: 8px;
+}
+
+.sourceControls {
+  display: grid;
+  gap: 6px;
+  padding: 0 12px 10px;
+}
+.sourceControls > label,
+.jsonEditor > label {
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+}
+.sourceControls select,
+.jsonEditor textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--muted-strong);
+  background: var(--canvas);
+  font: inherit;
+}
+.sourceControls select {
+  min-height: 29px;
+  padding: 0 7px;
+  font-size: 9px;
+}
+.jsonEditor {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+.jsonEditor textarea {
+  min-height: 150px;
+  padding: 8px;
+  resize: vertical;
+  font-family: ui-monospace, monospace;
+  font-size: 8px;
+  line-height: 1.45;
+}
+.jsonEditor button,
+.errorBanner button {
+  min-height: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  color: var(--text);
+  background: var(--panel-raised);
+  font-size: 9px;
+  cursor: pointer;
+}
+.importMessage {
+  margin: 2px 0 0;
+  color: var(--green);
+  font-size: 8px;
+  line-height: 1.5;
+}
+.importMessage--error {
+  color: #ff8f9b;
 }
 
 .sectionLabel {
@@ -276,6 +354,16 @@ button:focus-visible {
   color: var(--violet);
   font-size: 10px;
 }
+.tree button > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.treeDisclosure {
+  width: 9px;
+  color: var(--muted);
+  text-align: center;
+}
 .tree__child {
   padding-left: 22px !important;
 }
@@ -310,7 +398,7 @@ button:focus-visible {
 
 .workspace {
   display: grid;
-  grid-template-rows: 47px minmax(0, 1fr) 40px;
+  grid-template-rows: 47px minmax(0, 1fr) 48px;
   min-width: 0;
   min-height: 0;
   background: #090c12;
@@ -468,7 +556,7 @@ button:focus-visible {
   position: relative;
   z-index: 1;
 }
-.planPreview__copy > span {
+.planPreview__copy .previewSelectable > span {
   color: var(--cyan);
   font-size: 8px;
   font-weight: 850;
@@ -481,6 +569,17 @@ button:focus-visible {
   line-height: 0.96;
   letter-spacing: -0.06em;
 }
+.previewTextNode {
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
 .planPreview p {
   max-width: 540px;
   margin: 20px 0 0;
@@ -488,7 +587,32 @@ button:focus-visible {
   font-size: clamp(10px, 1.3vw, 14px);
   line-height: 1.7;
 }
-.planPreview__copy > div {
+.previewSelectable {
+  border-radius: 6px;
+  cursor: pointer;
+}
+.previewSelectable:focus-visible,
+.previewTextNode:focus-visible,
+.planPreview .isNodeSelected,
+.previewSections .isNodeSelected,
+.planPreview.isNodeSelected {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+}
+.previewSectionSelector {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 5px 7px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--muted);
+  background: var(--panel);
+  font-size: 8px;
+  cursor: pointer;
+}
+.previewActions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -607,6 +731,34 @@ button:focus-visible {
   color: var(--muted);
   font-size: 8px;
 }
+.previewSections {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.previewSections button {
+  display: grid;
+  gap: 5px;
+  min-height: 90px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--panel-raised);
+  text-align: left;
+  cursor: pointer;
+}
+.previewSections strong {
+  font-size: 10px;
+}
+.previewSections small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .previewFrame--tablet .planPreview,
 .previewFrame--mobile .planPreview {
   grid-template-columns: 1fr;
@@ -622,6 +774,21 @@ button:focus-visible {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
   min-height: 100%;
+}
+.codeContent {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+  min-height: 0;
+}
+.codeLocator {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--cyan);
+  background: var(--panel);
+  font-family: ui-monospace, monospace;
+  font-size: 8px;
 }
 .codeFiles {
   display: flex;
@@ -698,6 +865,30 @@ button:focus-visible {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.diagnosticList {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow: auto;
+}
+.diagnosticList button {
+  max-width: 420px;
+  min-height: 28px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--muted);
+  background: var(--canvas);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.diagnosticList button[aria-pressed='true'] {
+  border-color: var(--violet);
+  color: var(--text);
+}
 .engineStatus {
   color: var(--muted);
   font-size: 8px;
@@ -756,6 +947,72 @@ button:focus-visible {
 .sectionHeading > span {
   color: var(--green);
   font-size: 9px;
+}
+.nodeDetails {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 0;
+}
+.nodeDetails div {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 7px;
+}
+.nodeDetails dt,
+.nodeDetails dd {
+  margin: 0;
+  font-size: 8px;
+}
+.nodeDetails dt {
+  color: var(--muted);
+}
+.nodeDetails dd {
+  overflow-wrap: anywhere;
+  color: var(--muted-strong);
+  font-family: ui-monospace, monospace;
+}
+.selectedMatch {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--canvas);
+}
+.selectedMatch strong {
+  font-size: 9px;
+}
+.selectedMatch span {
+  color: var(--green);
+  font-size: 8px;
+}
+.selectedMatch p,
+.selectedMatch small,
+.emptyCopy,
+.diagnosticDetail p,
+.diagnosticDetail li,
+.registryMeta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 8px;
+  line-height: 1.55;
+}
+.selectedMatch small {
+  color: var(--orange);
+}
+.diagnosticDetail {
+  display: grid;
+  gap: 8px;
+}
+.diagnosticDetail ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 16px;
+}
+.registryMeta strong {
+  color: var(--green);
 }
 .matchList {
   display: grid;
@@ -866,6 +1123,25 @@ button:focus-visible {
   min-height: 34px;
   margin-top: 14px;
   padding: 0 16px;
+}
+.errorBanner {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #ffd1d6;
+  background: rgba(113, 25, 38, 0.96);
+  font-size: 9px;
+}
+.errorBanner small {
+  margin-left: auto;
+  font-family: ui-monospace, monospace;
+}
+.errorBanner button {
+  padding: 0 9px;
 }
 
 @media (prefers-reduced-motion: reduce) {

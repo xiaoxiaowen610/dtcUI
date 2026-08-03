@@ -27,6 +27,9 @@ const plan: GenerationPlan = {
   },
   hero: {
     id: 'hero',
+    eyebrowNodeId: 'eyebrow',
+    titleNodeId: 'title',
+    descriptionNodeId: 'description',
     eyebrow: 'ForgeUI',
     title: 'Deterministic by design',
     description: 'A generated page.',
@@ -95,6 +98,9 @@ describe('generateProject', () => {
     expect(
       first.files.find((generatedFile) => generatedFile.path.endsWith('Hero.tsx'))?.content
     ).toContain('data-forge-node-id="hero"')
+    expect(
+      first.files.find((generatedFile) => generatedFile.path.endsWith('Hero.tsx'))?.content
+    ).toContain('data-forge-node-id="title"')
   })
 
   it('UT-CODEGEN-002 escapes untrusted HTML metadata', () => {

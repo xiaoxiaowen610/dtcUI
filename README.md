@@ -21,7 +21,8 @@ from Phase 2 of the reviewed technical design:
   stable semantic scoring, and explainable outcomes;
 - deterministic Generation Plan and Babel AST TSX generation;
 - localhost Fastify Engine with health, analyze, and generate endpoints;
-- React Studio for running and inspecting the flagship pipeline;
+- React Studio with explicit Preset/Registry selection, local JSON import/editor, recursive accessible
+  Design Tree, responsive Preview, generated Code, Inspector, and Diagnostic navigation;
 - generated Hero plus four registered marketing Sections;
 - repeatable tests, type checking, workspace builds, and a real Vite build of generated output;
 - fixed valid/degraded/invalid evaluations and a pinned GitHub Actions quality gate.
@@ -152,7 +153,7 @@ is isolated to the manifest boundary and excluded from deterministic source comp
 | ----- | ----------------------------------------------------------------------------- |
 | 1     | Contract -> IR -> exact match -> plan -> AST -> real build (complete)         |
 | 2     | Tokens, hard constraints, Adapter/Recipe, semantic matcher (complete)         |
-| 3     | Three-panel Studio, linked tree/preview/code, responsive resolver             |
+| 3     | Linked three-panel Studio and responsive resolver (complete); sandbox next    |
 | 4     | full validator, isolated preview, Playwright, visual checks, ZIP export       |
 | 5     | bounded AI Patch, version guard, immutable apply, rollback, IndexedDB history |
 | 6     | fixed valid/degraded/invalid eval suite, CI reports, demo assets              |
@@ -168,6 +169,8 @@ Known limitations through Batch 03:
 - Token aliases and safety failures are complete; interactive conflict choices remain Studio work;
 - the flagship generates Hero plus four registered Sections; Recipe/native/manual outcomes are
   reported but require the later Studio confirmation workflow before they alter generated files;
+- Studio Preview renders the deterministic plan and three responsive states but does not execute
+  generated code in an isolated origin yet;
 - no untrusted package installation or browser execution sandbox exists yet;
 - no screenshot-to-code or arbitrary Figma import exists;
 - validation covers schemas, types, tests, workspace builds, and generated Vite output, not visual fidelity.

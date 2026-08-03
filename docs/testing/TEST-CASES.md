@@ -1,4 +1,4 @@
-# ForgeUI Through Batch 03 Detailed Test Cases
+# ForgeUI Through Batch 04 Detailed Test Cases
 
 Legend: P0 is release-blocking, P1 is important regression coverage, and P2 is future/manual. `Auto`
 means implemented in Vitest or the build scripts; `Phase 4` is deliberately excluded from this release.
@@ -131,21 +131,38 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 
 ## 7. Studio UI and client service
 
-| ID     | Priority | User steps                                                           | Expected result                                                                    | Execution  |
-| ------ | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
-| UI-001 | P0       | Open Studio before generation                                        | Project, tree, workflow, CTA and empty Inspector are visible                       | Auto/jsdom |
-| UI-002 | P0       | Click `Generate flagship` and Engine resolves                        | Hero preview, generation ID, 7/7 matches and connected status appear               | Auto/jsdom |
-| UI-003 | P0       | Generation Promise remains pending                                   | Run controls are disabled and pending labels are shown                             | Auto/jsdom |
-| UI-004 | P0       | Engine rejects generation                                            | Error title, structured message, request ID and retry control appear               | Auto/jsdom |
-| UI-006 | P1       | Select `tokens.css`                                                  | Code panel changes to token content                                                | Auto/jsdom |
-| UI-007 | P1       | Switch desktop -> tablet -> mobile                                   | Preview frame receives the selected device state/class                             | Auto/jsdom |
-| UI-008 | P0       | Client receives non-2xx structured Engine response                   | Service throws typed error preserving code/message/request ID                      | Auto       |
-| UI-009 | P1       | Client receives non-JSON/invalid error response                      | Safe fallback error is thrown, not `undefined: undefined`                          | Auto       |
-| UI-010 | P2       | Real browser at 1440/768/390 viewports                               | No overflow/overlap and focus order is valid                                       | Phase 4    |
-| UI-011 | P2       | Run axe and screenshot baseline                                      | No blocking a11y error or unapproved visual diff                                   | Phase 4    |
-| UI-012 | P0       | Generation fails, then user selects retry                            | A second request runs and the successful preview replaces the error                | Auto/jsdom |
-| UI-013 | P1       | Inspect CTA, tabs, device and file controls through accessible roles | Decorative glyphs do not pollute names and selected controls expose `aria-pressed` | Auto/jsdom |
-| UI-014 | P1       | Structured Engine error contains a non-string request ID             | Client rejects the malformed payload and uses the safe header fallback             | Auto       |
+| ID           | Priority | User steps                                                           | Expected result                                                                    | Execution  |
+| ------------ | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
+| UI-001       | P0       | Open Studio before generation                                        | Project, tree, workflow, CTA and empty Inspector are visible                       | Auto/jsdom |
+| UI-002       | P0       | Click `Generate flagship` and Engine resolves                        | Hero preview, generation ID, 7/7 matches and connected status appear               | Auto/jsdom |
+| UI-003       | P0       | Generation Promise remains pending                                   | Run controls are disabled and pending labels are shown                             | Auto/jsdom |
+| UI-004       | P0       | Engine rejects generation                                            | Error title, structured message, request ID and retry control appear               | Auto/jsdom |
+| UI-006       | P1       | Select `tokens.css`                                                  | Code panel changes to token content                                                | Auto/jsdom |
+| UI-007       | P1       | Switch desktop -> tablet -> mobile                                   | Preview frame receives the selected device state/class                             | Auto/jsdom |
+| UI-008       | P0       | Client receives non-2xx structured Engine response                   | Service throws typed error preserving code/message/request ID                      | Auto       |
+| UI-009       | P1       | Client receives non-JSON/invalid error response                      | Safe fallback error is thrown, not `undefined: undefined`                          | Auto       |
+| UI-010       | P2       | Real browser at 1440/768/390 viewports                               | No overflow/overlap and focus order is valid                                       | Phase 4    |
+| UI-011       | P2       | Run axe and screenshot baseline                                      | No blocking a11y error or unapproved visual diff                                   | Phase 4    |
+| UI-012       | P0       | Generation fails, then user selects retry                            | A second request runs and the successful preview replaces the error                | Auto/jsdom |
+| UI-013       | P1       | Inspect CTA, tabs, device and file controls through accessible roles | Decorative glyphs do not pollute names and selected controls expose `aria-pressed` | Auto/jsdom |
+| UI-014       | P1       | Structured Engine error contains a non-string request ID             | Client rejects the malformed payload and uses the safe header fallback             | Auto       |
+| B04-UT-001   | P0       | Merge Base/Mobile/Tablet/Desktop layout                              | Explicit mobile-first overrides preserve undeclared fields                         | Auto       |
+| B04-UT-002   | P0       | Reconcile stale persisted node and file IDs                          | Invalid IDs fall back to stable current defaults                                   | Auto       |
+| B04-UT-003   | P0       | Parse valid local Design JSON                                        | Versioned input is accepted                                                        | Auto       |
+| B04-UT-004   | P0       | Parse malformed JSON                                                 | Recoverable line/column syntax error                                               | Auto       |
+| B04-UT-005   | P0       | Parse JSON with wrong input Schema                                   | Schema path is reported and draft is rejected                                      | Auto       |
+| B04-SEC-001  | P0       | Import wrong type, empty file, or payload above 5 MB                 | File is rejected before JSON parsing                                               | Auto       |
+| B04-UI-001   | P0       | Apply valid local JSON in editor                                     | Draft Tree and generation availability update                                      | Auto/jsdom |
+| B04-UI-002   | P0       | Apply invalid JSON after success                                     | Error is shown while last successful preview remains                               | Auto/jsdom |
+| B04-UI-003   | P0       | Select Tree node                                                     | Preview, Inspector, and exact Code marker synchronize                              | Auto/jsdom |
+| B04-UI-004   | P0       | Select Preview node                                                  | Tree ancestor path opens and Inspector synchronizes                                | Auto/jsdom |
+| B04-UI-005   | P0       | Select node Diagnostic                                               | Tree, source file, reason, and suggested action synchronize                        | Auto/jsdom |
+| B04-UI-006   | P1       | Change viewport/node, visit Code, return to Preview                  | Device and selection are retained                                                  | Auto/jsdom |
+| B04-UI-007   | P0       | Attempt a second run while pending                                   | Controls are disabled and one request is sent                                      | Auto/jsdom |
+| B04-UI-008   | P0       | Engine fails after a successful run, then Retry succeeds             | Request ID appears; prior output remains; retry recovers                           | Auto/jsdom |
+| B04-UI-009   | P0       | Clear explicit Registry selection                                    | Both generation controls are disabled                                              | Auto/jsdom |
+| B04-A11Y-001 | P0       | Navigate Tree with Arrow/Enter                                       | Focus, expansion, level, and selection use ARIA                                    | Auto/jsdom |
+| B04-INT-001  | P0       | Imported non-flagship JSON reaches Engine contract                   | Custom content is normalized, generated, and displayed                             | Auto/jsdom |
 
 ## 8. Integration, build and security
 

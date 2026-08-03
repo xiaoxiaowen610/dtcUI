@@ -1,4 +1,4 @@
-# ForgeUI Through Batch 03 Test Strategy
+# ForgeUI Through Batch 04 Test Strategy
 
 ## 1. Objective
 
@@ -33,15 +33,17 @@ Automated in this phase:
 - Generation Plan success, Hero uniqueness, failure, import, action, visual, and diagnostic behavior;
 - generated-file determinism, escaping, ordering, token boundaries, and manifest/report behavior;
 - Engine business pipeline, shared body limit, and Fastify API contract tests;
-- Studio initial, pending, success, error, request ID, retry, accessible selection, preview, code,
-  file-selection, and device interactions;
+- Studio local JSON type/size/syntax/schema import, explicit Registry selection, initial/pending/success/
+  degraded/error states, retained-success retry, recursive keyboard Tree, bidirectional node linking,
+  diagnostic navigation, preview, code, file-selection, and device interactions;
+- mobile-first responsive layout merging and non-inheriting visibility behavior;
 - generated TypeScript and real Vite production build;
 - Engine and Studio production builds;
 - fixed valid/degraded/invalid evaluations with deterministic machine-readable reports and labeled
   Top-1 component accuracy;
 - pinned GitHub Actions execution and quality evidence upload.
 
-Explicitly out of the Batch 03 pass rate:
+Explicitly out of the Batch 04 pass rate:
 
 - Playwright screenshot baselines and pixel diffs;
 - real-browser layout overlap/overflow assertions;
@@ -53,17 +55,18 @@ Those features remain Phase 4/5 work and are recorded as `not implemented`, not 
 
 ## 3. Test layers
 
-| Layer       | Purpose                                       | Tool                    | Gate         |
-| ----------- | --------------------------------------------- | ----------------------- | ------------ |
-| Unit        | Pure functions, schemas, guards, serializers  | Vitest                  | Every change |
-| Token       | Alias/value/conflict/CSS resolution           | Vitest                  | Every change |
-| Business    | IR -> Registry -> Plan -> Codegen behavior    | Vitest                  | Every change |
-| API         | Fastify request/response/error/CORS contract  | Fastify inject + Vitest | Every change |
-| UI          | User-visible Studio states and interactions   | Testing Library + jsdom | Every change |
-| Integration | Flagship end-to-end in process                | Vitest                  | Every change |
-| Build       | Generated TypeScript and production bundles   | TypeScript + Vite       | Every change |
-| Visual E2E  | Fixed browser screenshots/layout              | Playwright              | Phase 4 only |
-| Eval        | Fixed valid/degraded/invalid expected results | Node + Vitest           | Every change |
+| Layer       | Purpose                                        | Tool                    | Gate         |
+| ----------- | ---------------------------------------------- | ----------------------- | ------------ |
+| Unit        | Pure functions, schemas, guards, serializers   | Vitest                  | Every change |
+| Token       | Alias/value/conflict/CSS resolution            | Vitest                  | Every change |
+| Business    | IR -> Registry -> Plan -> Codegen behavior     | Vitest                  | Every change |
+| API         | Fastify request/response/error/CORS contract   | Fastify inject + Vitest | Every change |
+| UI          | Imports, linked Studio states and interactions | Testing Library + jsdom | Every change |
+| Responsive  | Mobile-first breakpoint resolution             | Vitest                  | Every change |
+| Integration | Flagship end-to-end in process                 | Vitest                  | Every change |
+| Build       | Generated TypeScript and production bundles    | TypeScript + Vite       | Every change |
+| Visual E2E  | Fixed browser screenshots/layout               | Playwright              | Phase 4 only |
+| Eval        | Fixed valid/degraded/invalid expected results  | Node + Vitest           | Every change |
 
 ## 4. Prioritization
 

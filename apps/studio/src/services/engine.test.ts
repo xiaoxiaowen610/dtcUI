@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import input from '../../../../presets/saas/input.json'
 import registry from '../../../../presets/saas/registry.json'
 import { analyzeRequestSchema, type GenerateResponse } from '@forge-ui/contracts'
-import { EngineRequestError, generateFlagship } from './engine'
+import { EngineRequestError, generateProject } from './engine'
 
 const request = analyzeRequestSchema.parse({ input, registry })
 
@@ -21,7 +21,7 @@ describe('Studio Engine client', () => {
     )
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(generateFlagship(request)).resolves.toEqual(result)
+    await expect(generateProject(request)).resolves.toEqual(result)
     expect(fetchMock).toHaveBeenCalledWith(
       '/api/generate',
       expect.objectContaining({
@@ -51,7 +51,7 @@ describe('Studio Engine client', () => {
       )
     )
 
-    const error = await generateFlagship(request).catch((caught: unknown) => caught)
+    const error = await generateProject(request).catch((caught: unknown) => caught)
     expect(error).toBeInstanceOf(EngineRequestError)
     expect(error).toMatchObject({
       code: 'REGISTRY_INVALID',
@@ -72,7 +72,7 @@ describe('Studio Engine client', () => {
       )
     )
 
-    await expect(generateFlagship(request)).rejects.toMatchObject({
+    await expect(generateProject(request)).rejects.toMatchObject({
       code: 'ENGINE_REQUEST_FAILED',
       message: 'ENGINE_REQUEST_FAILED: Engine request failed with HTTP 502.',
       requestId: 'gateway-7',
@@ -91,7 +91,7 @@ describe('Studio Engine client', () => {
       )
     )
 
-    await expect(generateFlagship(request)).rejects.toMatchObject({
+    await expect(generateProject(request)).rejects.toMatchObject({
       code: 'ENGINE_REQUEST_FAILED',
       status: 500
     })
@@ -115,7 +115,7 @@ describe('Studio Engine client', () => {
       )
     )
 
-    await expect(generateFlagship(request)).rejects.toMatchObject({
+    await expect(generateProject(request)).rejects.toMatchObject({
       code: 'ENGINE_REQUEST_FAILED',
       requestId: 'header-request-id',
       status: 500

@@ -96,9 +96,24 @@ function buildHeroProgram(plan: GenerationPlan): t.File {
     'div',
     [stylesAttribute('copy')],
     [
-      element('p', [stylesAttribute('eyebrow')], [expressionText(plan.hero.eyebrow)]),
-      element('h1', [stylesAttribute('title')], [expressionText(plan.hero.title)]),
-      element('p', [stylesAttribute('description')], [expressionText(plan.hero.description)]),
+      element(
+        'p',
+        [stylesAttribute('eyebrow'), jsxAttribute('data-forge-node-id', plan.hero.eyebrowNodeId)],
+        [expressionText(plan.hero.eyebrow)]
+      ),
+      element(
+        'h1',
+        [stylesAttribute('title'), jsxAttribute('data-forge-node-id', plan.hero.titleNodeId)],
+        [expressionText(plan.hero.title)]
+      ),
+      element(
+        'p',
+        [
+          stylesAttribute('description'),
+          jsxAttribute('data-forge-node-id', plan.hero.descriptionNodeId)
+        ],
+        [expressionText(plan.hero.description)]
+      ),
       element('div', [stylesAttribute('actions')], actionElements)
     ]
   )
