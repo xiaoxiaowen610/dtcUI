@@ -4,6 +4,7 @@ import registry from '../../../presets/saas/registry.json'
 import {
   componentRegistryManifestSchema,
   designInputEnvelopeSchema,
+  evalCaseSchema,
   layoutSpecSchema
 } from './index'
 
@@ -42,6 +43,32 @@ describe('versioned contracts', () => {
       designInputEnvelopeSchema.safeParse({
         ...input,
         root: { ...input.root, name: '   ' }
+      }).success
+    ).toBe(false)
+  })
+
+  it('B01-UT-004 requires invalid eval cases to declare an error code', () => {
+    expect(
+      evalCaseSchema.safeParse({
+        id: 'invalid-case',
+        name: 'Invalid case',
+        kind: 'invalid',
+        input: {},
+        registry: {},
+        expected: {}
+      }).success
+    ).toBe(false)
+  })
+
+  it('B01-UT-005 rejects error expectations on non-invalid eval cases', () => {
+    expect(
+      evalCaseSchema.safeParse({
+        id: 'valid-case',
+        name: 'Valid case',
+        kind: 'valid',
+        input: {},
+        registry: {},
+        expected: { errorCode: 'SHOULD_NOT_EXIST' }
       }).success
     ).toBe(false)
   })

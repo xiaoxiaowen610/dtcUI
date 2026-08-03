@@ -128,10 +128,26 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | SEC-004 | P1       | Authorization header is logged                                      | Logger configuration redacts header  | Configuration review |
 | SEC-005 | P2       | Preview posts message from foreign origin                           | Message is ignored                   | Phase 4              |
 
-## 8. Exit criteria
+## 8. Fixed evaluation and CI
+
+| ID         | Priority | Scenario                                  | Expected result                                           | Execution        |
+| ---------- | -------- | ----------------------------------------- | --------------------------------------------------------- | ---------------- |
+| B01-UT-001 | P0       | Eval suite contains duplicate case ID     | Suite rejects duplicate before execution                  | Auto             |
+| B01-UT-002 | P0       | Cases are supplied in different orders    | Normalized report order and bytes are identical           | Auto             |
+| B01-UT-003 | P0       | Expected match differs from actual result | Case fails with node-level expected/actual difference     | Auto             |
+| B01-UT-004 | P0       | Invalid case omits expected error code    | Contract rejects ambiguous invalid fixture                | Auto             |
+| B01-UT-005 | P1       | Valid/degraded case declares error code   | Contract rejects contradictory fixture                    | Auto             |
+| B01-BL-001 | P0       | Run fixed valid flagship case             | Generation succeeds with three labeled exact matches      | `pnpm evals`     |
+| B01-BL-002 | P0       | Run fixed unknown-component case          | Generation succeeds with explainable manual-review result | `pnpm evals`     |
+| B01-BL-003 | P0       | Run fixed malformed-design case           | Expected `DESIGN_SCHEMA_INVALID` is observed              | `pnpm evals`     |
+| B01-CI-001 | P0       | GitHub Actions quality job                | Pinned install, coverage, check and Eval complete         | Actions workflow |
+| B01-CI-002 | P1       | Eval returns a failed case                | Job fails after writing uploadable diagnostic report      | Actions workflow |
+
+## 9. Exit criteria
 
 - Every automated P0/P1 case passes.
 - No unresolved release-blocking defect remains.
 - Coverage gate passes.
 - Build and generated-output validation pass.
+- Fixed valid/degraded/invalid Eval cases pass and emit a deterministic report.
 - Phase 4 cases remain explicitly excluded from the denominator.

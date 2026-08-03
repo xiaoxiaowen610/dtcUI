@@ -1,25 +1,26 @@
-# ForgeUI Phase 1 Test Execution Report
+# ForgeUI Phase 1 + Batch 01 Test Execution Report
 
 ## 1. Result
 
-**PASS** — all automated Phase 1 quality gates completed successfully on 2026-08-01.
+**PASS** — all automated Phase 1 and Batch 01 quality gates completed successfully on 2026-08-01.
 
 | Gate                             | Result | Evidence                                                      |
 | -------------------------------- | ------ | ------------------------------------------------------------- |
 | TypeScript                       | Passed | `tsc --noEmit` returned exit code 0                           |
-| Unit/business/API/UI/integration | Passed | 11 files, 90 tests, 0 failed                                  |
+| Unit/business/API/UI/integration | Passed | 12 files, 96 tests, 0 failed                                  |
 | Coverage                         | Passed | All configured global thresholds exceeded                     |
 | Engine production build          | Passed | `tsup` produced the Node 24 ESM bundle                        |
 | Studio production build          | Passed | Vite transformed 71 modules and emitted the production bundle |
 | Generated flagship TypeScript    | Passed | Materialized output type-check succeeded                      |
 | Generated flagship Vite build    | Passed | Production build succeeded with 3 exact component matches     |
+| Fixed evaluation suite           | Passed | valid/degraded/invalid cases: 3/3 passed                      |
 
 ## 2. Environment
 
 | Item            | Value                            |
 | --------------- | -------------------------------- |
-| Baseline commit | `5675277`                        |
-| Branch          | `main`                           |
+| Baseline commit | `cdaa231`                        |
+| Branch          | `agent/batch-01-ci-evals`        |
 | Node.js         | `v24.14.0`                       |
 | pnpm            | `11.7.0`                         |
 | Test runner     | Vitest `4.1.10`                  |
@@ -32,10 +33,10 @@ Command: `pnpm test:coverage`
 
 | Metric     |           Actual | Gate | Result |
 | ---------- | ---------------: | ---: | ------ |
-| Statements | 96.04% (364/379) |  75% | Passed |
-| Branches   | 89.23% (257/288) |  70% | Passed |
-| Functions  | 96.18% (126/131) |  75% | Passed |
-| Lines      | 96.29% (338/351) |  75% | Passed |
+| Statements | 94.22% (424/450) |  75% | Passed |
+| Branches   | 85.71% (294/343) |  70% | Passed |
+| Functions  | 96.77% (150/155) |  75% | Passed |
+| Lines      | 94.68% (392/414) |  75% | Passed |
 
 The coverage denominator is restricted to Phase 1 production logic. The example external UI package
 is excluded because it is a fixture dependency, not ForgeUI generation logic.
@@ -65,15 +66,21 @@ deliberate red run reproduced 14 failures across those missing behaviors; after 
 targeted suite passed 67/67; the final full suite passed 90/90 after adding the cross-import binding
 collision regression.
 
+Batch 01 added six automated contract/evaluation cases and three executable fixed Eval cases. The
+suite now proves that a valid case succeeds, an unknown component degrades without blocking, and a
+malformed design fails with the expected error code. The normalized report deliberately excludes
+timestamps and durations so repeated runs are byte-stable.
+
 Final commands:
 
 ```bash
 pnpm test:coverage
 pnpm check
+pnpm evals
 ```
 
-`pnpm check` executes type checking, all tests, Engine/Studio builds, and generated flagship
-validation. The final command returned exit code 0.
+`pnpm check` executes type checking, all tests, Engine/Studio builds, generated flagship validation,
+and the fixed Eval suite. The final command returned exit code 0.
 
 ## 6. Explicit exclusions
 

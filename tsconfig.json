@@ -31,6 +31,7 @@
     "packages/**/*.ts",
     "packages/**/*.tsx",
     "scripts/**/*.ts",
+    "evals/**/*.ts",
     "test/**/*.ts",
     "vitest.config.ts"
   ],
