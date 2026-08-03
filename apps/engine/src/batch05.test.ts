@@ -34,7 +34,7 @@ afterEach(async () => {
   await Promise.all([app.close(), preview.close()])
 })
 
-async function createAndComplete(payload: unknown = { input, registry }) {
+async function createAndComplete(payload: Record<string, unknown> = { input, registry }) {
   const response = await app.inject({
     method: 'POST',
     url: '/api/validation-jobs',
