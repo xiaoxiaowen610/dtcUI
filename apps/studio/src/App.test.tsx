@@ -120,7 +120,7 @@ describe('ForgeUI Studio', () => {
 
     await user.click(screen.getByRole('button', { name: 'src/tokens.css' }))
 
-    expect(screen.getByText(/--color-brand-primary: #7c5cff/)).toBeInTheDocument()
+    expect(screen.getByText(/--color-brand-primary: var\(--color-purple-500\)/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'src/tokens.css' })).toHaveAttribute(
       'aria-pressed',
       'true'

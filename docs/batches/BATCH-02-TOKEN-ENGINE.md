@@ -1,6 +1,6 @@
 # Batch 02：Token Engine
 
-状态：待开始
+状态：已完成
 
 分支：`agent/batch-02-token-engine`
 
@@ -49,4 +49,9 @@
 
 ## 实测结果
 
-待本批完成后填写。
+- `pnpm evals`：6/6 通过；新增 alias valid、cycle invalid、missing reference invalid。
+- `pnpm test:coverage`：13 个文件、117 个测试全部通过；Statements 91.97%、Branches 81.45%、Functions 95.72%、Lines 93.05%。
+- `pnpm check`：typecheck、117 tests、Engine/Studio build、生成项目 TypeScript/Vite、6-case Eval 全部通过。
+- 2,000 Token Alias 长链专项测试低于 500 ms 门槛。
+- Flagship `tokens.css` 由 16 个输入 Token 生成，包含 2 个 Semantic Alias；生成器不再保存品牌 Token 常量。
+- Browser/Visual 仍未计为通过。

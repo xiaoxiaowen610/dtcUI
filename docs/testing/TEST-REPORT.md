@@ -1,26 +1,27 @@
-# ForgeUI Phase 1 + Batch 01 Test Execution Report
+# ForgeUI Through Batch 02 Test Execution Report
 
 ## 1. Result
 
-**PASS** — all automated Phase 1 and Batch 01 quality gates completed successfully on 2026-08-01.
+**PASS** — all automated quality gates through Batch 02 completed successfully on 2026-08-01.
 
 | Gate                             | Result | Evidence                                                      |
 | -------------------------------- | ------ | ------------------------------------------------------------- |
 | TypeScript                       | Passed | `tsc --noEmit` returned exit code 0                           |
-| Unit/business/API/UI/integration | Passed | 12 files, 96 tests, 0 failed                                  |
+| Unit/business/API/UI/integration | Passed | 13 files, 117 tests, 0 failed                                 |
 | Coverage                         | Passed | All configured global thresholds exceeded                     |
 | Engine production build          | Passed | `tsup` produced the Node 24 ESM bundle                        |
 | Studio production build          | Passed | Vite transformed 71 modules and emitted the production bundle |
 | Generated flagship TypeScript    | Passed | Materialized output type-check succeeded                      |
 | Generated flagship Vite build    | Passed | Production build succeeded with 3 exact component matches     |
-| Fixed evaluation suite           | Passed | valid/degraded/invalid cases: 3/3 passed                      |
+| Fixed evaluation suite           | Passed | valid/degraded/invalid cases: 6/6 passed                      |
+| Token performance                | Passed | 2,000-token alias chain remained below the 500 ms unit budget |
 
 ## 2. Environment
 
 | Item            | Value                            |
 | --------------- | -------------------------------- |
-| Baseline commit | `cdaa231`                        |
-| Branch          | `agent/batch-01-ci-evals`        |
+| Baseline commit | `7b8b1ee` (remote Batch 01)      |
+| Branch          | `agent/batch-02-token-engine`    |
 | Node.js         | `v24.14.0`                       |
 | pnpm            | `11.7.0`                         |
 | Test runner     | Vitest `4.1.10`                  |
@@ -33,10 +34,10 @@ Command: `pnpm test:coverage`
 
 | Metric     |           Actual | Gate | Result |
 | ---------- | ---------------: | ---: | ------ |
-| Statements | 94.22% (424/450) |  75% | Passed |
-| Branches   | 85.71% (294/343) |  70% | Passed |
-| Functions  | 96.77% (150/155) |  75% | Passed |
-| Lines      | 94.68% (392/414) |  75% | Passed |
+| Statements | 91.97% (596/648) |  75% | Passed |
+| Branches   | 81.45% (404/496) |  70% | Passed |
+| Functions  | 95.72% (179/187) |  75% | Passed |
+| Lines      | 93.05% (549/590) |  75% | Passed |
 
 The coverage denominator is restricted to Phase 1 production logic. The example external UI package
 is excluded because it is a fixture dependency, not ForgeUI generation logic.
@@ -70,6 +71,12 @@ Batch 01 added six automated contract/evaluation cases and three executable fixe
 suite now proves that a valid case succeeds, an unknown component degrades without blocking, and a
 malformed design fails with the expected error code. The normalized report deliberately excludes
 timestamps and durations so repeated runs are byte-stable.
+
+Batch 02 added a dedicated Token Resolver, 21 contract/unit/business/API/integration regressions and
+three fixed Token Eval cases. Flagship generation now resolves 16 input tokens, including two semantic
+aliases, and writes their stable values into `tokens.css`. Duplicate paths, CSS-variable collisions,
+missing references, type mismatches, cycles and unsafe CSS are blocking failures; exact/similar values
+remain non-blocking review suggestions.
 
 Final commands:
 

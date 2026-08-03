@@ -12,7 +12,8 @@ export default defineConfig({
       '@forge-ui/design-ir': packageAlias('design-ir'),
       '@forge-ui/component-registry': packageAlias('component-registry'),
       '@forge-ui/generation-plan': packageAlias('generation-plan'),
-      '@forge-ui/code-generator': packageAlias('code-generator')
+      '@forge-ui/code-generator': packageAlias('code-generator'),
+      '@forge-ui/token-resolver': packageAlias('token-resolver')
     }
   },
   test: {

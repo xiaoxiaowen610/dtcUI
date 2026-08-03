@@ -148,6 +148,29 @@ describe('Engine HTTP API', () => {
 
     expect(response.statusCode).toBe(413)
   })
+
+  it('B02-API-001 maps Token Resolver failures to a recoverable structured error', async () => {
+    ;(inputFixture.tokens as unknown[]).push({
+      path: 'color.cycle',
+      type: 'color',
+      value: { ref: 'color.cycle' },
+      level: 'semantic'
+    })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/generate',
+      headers: { 'x-request-id': 'token-cycle-request' },
+      payload: { input: inputFixture, registry: registryFixture }
+    })
+
+    expect(response.statusCode).toBe(400)
+    expect(response.json()).toMatchObject({
+      code: 'TOKEN_ALIAS_CYCLE',
+      stage: 'token-resolver',
+      recoverable: true,
+      requestId: 'token-cycle-request'
+    })
+  })
 })
 
 describe('Engine startup boundaries', () => {

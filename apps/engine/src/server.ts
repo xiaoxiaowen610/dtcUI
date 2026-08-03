@@ -11,6 +11,7 @@ import { ZodError } from 'zod'
 import { DesignIrError } from '@forge-ui/design-ir'
 import { RegistryError } from '@forge-ui/component-registry'
 import { GenerationPlanError } from '@forge-ui/generation-plan'
+import { TokenResolverError } from '@forge-ui/token-resolver'
 import { analyzeDesign, generateDesign } from './pipeline'
 
 interface BuildServerOptions {
@@ -38,6 +39,19 @@ function errorPayload(error: unknown, requestId: string): ForgeErrorPayload {
       recoverable: true,
       fallbackApplied: false,
       suggestedActions: ['Fix the Registry Manifest and retry.'],
+      requestId
+    }
+  }
+
+  if (error instanceof TokenResolverError) {
+    const primary = error.diagnostics[0]
+    return {
+      code: primary?.code ?? 'TOKEN_RESOLUTION_FAILED',
+      stage: 'token-resolver',
+      message: error.message,
+      recoverable: true,
+      fallbackApplied: false,
+      suggestedActions: error.diagnostics.flatMap((item) => item.suggestedActions),
       requestId
     }
   }

@@ -5,7 +5,9 @@ import {
   componentRegistryManifestSchema,
   designInputEnvelopeSchema,
   evalCaseSchema,
-  layoutSpecSchema
+  layoutSpecSchema,
+  tokenAliasSchema,
+  tokenTypeSchema
 } from './index'
 
 describe('versioned contracts', () => {
@@ -71,5 +73,12 @@ describe('versioned contracts', () => {
         expected: { errorCode: 'SHOULD_NOT_EXIST' }
       }).success
     ).toBe(false)
+  })
+
+  it('B02-UT-009 supports radius and a versionable alias shape', () => {
+    expect(tokenTypeSchema.parse('radius')).toBe('radius')
+    expect(tokenAliasSchema.parse({ ref: 'radius.primitive.md' })).toEqual({
+      ref: 'radius.primitive.md'
+    })
   })
 })

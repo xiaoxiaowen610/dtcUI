@@ -14,6 +14,7 @@ The repository currently targets the Phase 1 vertical slice defined by the PRD a
 - versioned input, IR, Registry, Generation Plan, manifest, and report contracts;
 - AI SaaS flagship preset;
 - stable Design IR normalization and duplicate-ID protection;
+- deterministic Token Resolver with aliases, cycle/missing/type guards, similarity suggestions, and input-driven CSS Variables;
 - minimal external component package and Registry exact matching;
 - deterministic Generation Plan and Babel AST TSX generation;
 - localhost Fastify Engine with health, analyze, and generate endpoints;
@@ -21,7 +22,7 @@ The repository currently targets the Phase 1 vertical slice defined by the PRD a
 - repeatable tests, type checking, workspace builds, and a real Vite build of generated output.
 - fixed valid/degraded/invalid evaluations and a pinned GitHub Actions quality gate.
 
-Token conflict resolution, semantic scoring, AI Patch, version history, sandboxed preview, ZIP export,
+Semantic component scoring, AI Patch, version history, sandboxed preview, ZIP export,
 Playwright layout assertions, and visual baselines remain later roadmap phases. They are not claimed as
 implemented behavior.
 
@@ -101,6 +102,7 @@ apps/
 packages/
   contracts/               Versioned Zod schemas and API contracts
   design-ir/               Deterministic input normalization
+  token-resolver/          Alias graph, value validation, diagnostics, CSS token plan
   component-registry/      Manifest validation and exact matching
   generation-plan/         Stable page/file/import plan
   code-generator/          Babel AST TSX and project generation
@@ -144,7 +146,7 @@ is isolated to the manifest boundary and excluded from deterministic source comp
 | Phase | Outcome                                                                       |
 | ----- | ----------------------------------------------------------------------------- |
 | 1     | Contract -> IR -> exact match -> plan -> AST -> real build                    |
-| 2     | Tokens, hard constraints, adapters/recipes, semantic matcher, diagnostics     |
+| 2     | Tokens complete; hard constraints, adapters/recipes and semantic matcher next |
 | 3     | Three-panel Studio, linked tree/preview/code, responsive resolver             |
 | 4     | full validator, isolated preview, Playwright, visual checks, ZIP export       |
 | 5     | bounded AI Patch, version guard, immutable apply, rollback, IndexedDB history |
@@ -159,6 +161,7 @@ from committed eval cases in a fixed environment.
 Known Phase 1 limitations:
 
 - only the AI SaaS preset and exact Source Key matching are complete;
+- Token aliases and safety failures are complete; interactive conflict choices remain Studio work;
 - only the Hero vertical slice is generated;
 - no untrusted package installation or browser execution sandbox exists yet;
 - no screenshot-to-code or arbitrary Figma import exists;

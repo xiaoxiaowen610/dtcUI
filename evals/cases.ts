@@ -22,6 +22,30 @@ const malformedInput: unknown = {
   }
 }
 
+const tokenCycleInput = clone(flagshipInput)
+;(tokenCycleInput.tokens as unknown[]).push(
+  {
+    path: 'color.cycle.a',
+    type: 'color',
+    value: { ref: 'color.cycle.b' },
+    level: 'semantic'
+  },
+  {
+    path: 'color.cycle.b',
+    type: 'color',
+    value: { ref: 'color.cycle.a' },
+    level: 'semantic'
+  }
+)
+
+const tokenMissingInput = clone(flagshipInput)
+;(tokenMissingInput.tokens as unknown[]).push({
+  path: 'color.missing.alias',
+  type: 'color',
+  value: { ref: 'color.does.not.exist' },
+  level: 'semantic'
+})
+
 export const fixedEvalCases: EvalCase[] = [
   {
     id: 'flagship-valid',
@@ -42,6 +66,42 @@ export const fixedEvalCases: EvalCase[] = [
         'hero-product-preview': 'exact-component'
       },
       expectedDiagnostics: []
+    }
+  },
+  {
+    id: 'token-alias-valid',
+    name: 'Semantic token alias resolves into generated CSS',
+    kind: 'valid',
+    input: flagshipInput,
+    registry: flagshipRegistry,
+    expected: {
+      generationSuccess: true,
+      expectedTokens: {
+        'color.brand.primary': 'var(--color-purple-500)',
+        'color.purple.500': '#7c5cff'
+      }
+    }
+  },
+  {
+    id: 'token-alias-cycle-invalid',
+    name: 'Token alias cycle is rejected',
+    kind: 'invalid',
+    input: tokenCycleInput,
+    registry: flagshipRegistry,
+    expected: {
+      errorCode: 'TOKEN_ALIAS_CYCLE',
+      generationSuccess: false
+    }
+  },
+  {
+    id: 'token-reference-missing-invalid',
+    name: 'Missing token reference is rejected',
+    kind: 'invalid',
+    input: tokenMissingInput,
+    registry: flagshipRegistry,
+    expected: {
+      errorCode: 'TOKEN_REFERENCE_MISSING',
+      generationSuccess: false
     }
   },
   {

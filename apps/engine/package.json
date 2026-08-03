@@ -15,6 +15,7 @@
     "@forge-ui/contracts": "workspace:*",
     "@forge-ui/design-ir": "workspace:*",
     "@forge-ui/generation-plan": "workspace:*",
+    "@forge-ui/token-resolver": "workspace:*",
     "fastify": "^5.11.0",
     "zod": "^4.4.3"
   }

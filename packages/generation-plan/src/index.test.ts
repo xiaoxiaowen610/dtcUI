@@ -3,6 +3,7 @@ import input from '../../../presets/saas/input.json'
 import registryInput from '../../../presets/saas/registry.json'
 import { matchComponents, validateRegistry } from '@forge-ui/component-registry'
 import { createDesignDocument } from '@forge-ui/design-ir'
+import { resolveTokens } from '@forge-ui/token-resolver'
 import { createGenerationPlan, GenerationPlanError } from './index'
 
 let inputFixture: typeof input
@@ -14,7 +15,12 @@ beforeEach(() => {
 function planFor(candidate: unknown = inputFixture, registryCandidate: unknown = registryInput) {
   const document = createDesignDocument(candidate)
   const registry = validateRegistry(registryCandidate)
-  return createGenerationPlan(document, registry, matchComponents(document, registry))
+  return createGenerationPlan(
+    document,
+    registry,
+    matchComponents(document, registry),
+    resolveTokens(document.tokens)
+  )
 }
 
 describe('Generation Plan business rules', () => {
@@ -37,6 +43,7 @@ describe('Generation Plan business rules', () => {
         names: ['Button', 'ProductPreview']
       }
     ])
+    expect(plan.tokenResolution.tokens.length).toBeGreaterThan(3)
   })
 
   it('BL-PLAN-002 rejects a document without a Hero semantic section', () => {

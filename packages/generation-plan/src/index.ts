@@ -7,7 +7,8 @@ import {
   type GenerationDiagnostic,
   type GenerationPlan,
   type HeroActionPlan,
-  type RegisteredComponent
+  type RegisteredComponent,
+  type TokenResolution
 } from '@forge-ui/contracts'
 import { findNodeBySemantic, walkDesignNodes } from '@forge-ui/design-ir'
 import { stableHash, stableStringify } from '@forge-ui/shared'
@@ -34,7 +35,8 @@ function componentForMatch(
 export function createGenerationPlan(
   document: DesignDocument,
   registry: ComponentRegistryManifest,
-  matches: ComponentMatchResult[]
+  matches: ComponentMatchResult[],
+  tokenResolution: TokenResolution
 ): GenerationPlan {
   const heroes = walkDesignNodes(document.root).filter((node) => node.semantic === 'hero')
   if (heroes.length === 0) {
@@ -106,17 +108,20 @@ export function createGenerationPlan(
     }
   }
 
-  const diagnostics: GenerationDiagnostic[] = matches
-    .filter((match) => match.strategy === 'manual-review')
-    .map((match) => ({
-      code: 'COMPONENT_MANUAL_REVIEW',
-      stage: 'generation-plan',
-      severity: 'warning',
-      message: `Node ${match.nodeId} requires manual component review.`,
-      nodeId: match.nodeId,
-      blocking: false,
-      suggestedActions: ['Select a registered component or a safe native fallback.']
-    }))
+  const diagnostics: GenerationDiagnostic[] = [
+    ...tokenResolution.diagnostics,
+    ...matches
+      .filter((match) => match.strategy === 'manual-review')
+      .map((match): GenerationDiagnostic => ({
+        code: 'COMPONENT_MANUAL_REVIEW',
+        stage: 'generation-plan',
+        severity: 'warning',
+        message: `Node ${match.nodeId} requires manual component review.`,
+        nodeId: match.nodeId,
+        blocking: false,
+        suggestedActions: ['Select a registered component or a safe native fallback.']
+      }))
+  ]
 
   const sourceHash = stableHash(stableStringify(document))
 
@@ -147,6 +152,7 @@ export function createGenerationPlan(
         ...(entry.defaultName ? { defaultName: entry.defaultName } : {}),
         names: [...entry.names].sort()
       })),
+    tokenResolution,
     hero: {
       id: hero.id,
       eyebrow: textForSemantic(hero, 'hero-eyebrow'),

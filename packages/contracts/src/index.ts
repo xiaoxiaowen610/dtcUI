@@ -123,11 +123,33 @@ export const rawDesignNodeSchema: z.ZodType<RawDesignNode> = z.lazy(() =>
   })
 )
 
+export const tokenTypeSchema = z.enum([
+  'color',
+  'dimension',
+  'fontFamily',
+  'fontWeight',
+  'typography',
+  'radius',
+  'shadow'
+])
+
+export type TokenType = z.infer<typeof tokenTypeSchema>
+
+export const tokenAliasSchema = z
+  .object({
+    ref: z.string().min(1)
+  })
+  .strict()
+
+export type TokenAlias = z.infer<typeof tokenAliasSchema>
+
 export const externalTokenSchema = z.object({
   path: z.string().min(1),
-  type: z.enum(['color', 'dimension', 'fontFamily', 'fontWeight', 'typography', 'shadow']),
+  type: tokenTypeSchema,
   value: z.unknown(),
-  level: z.enum(['primitive', 'semantic'])
+  level: z.enum(['primitive', 'semantic']),
+  description: z.string().optional(),
+  source: z.string().optional()
 })
 
 export const externalAssetSchema = z.object({
@@ -154,6 +176,33 @@ export const designInputEnvelopeSchema = z.object({
 export type DesignInputEnvelope = z.infer<typeof designInputEnvelopeSchema>
 export type ExternalToken = z.infer<typeof externalTokenSchema>
 export type ExternalAsset = z.infer<typeof externalAssetSchema>
+
+export interface ResolvedToken {
+  path: string
+  type: TokenType
+  level: 'primitive' | 'semantic'
+  cssVariable: string
+  cssValue: string
+  resolvedValue: unknown
+  aliasRef?: string
+  description?: string
+  source?: string
+}
+
+export interface TokenResolutionSummary {
+  total: number
+  referenced: number
+  reused: number
+  created: number
+  conflicts: number
+}
+
+export interface TokenResolution {
+  schemaVersion: typeof SCHEMA_VERSION
+  tokens: ResolvedToken[]
+  summary: TokenResolutionSummary
+  diagnostics: GenerationDiagnostic[]
+}
 
 export interface DesignNode {
   id: string
@@ -240,7 +289,13 @@ export interface ComponentMatchResult {
 }
 
 export type PipelineStage =
-  'input' | 'design-ir' | 'registry' | 'generation-plan' | 'code-generation' | 'validation'
+  | 'input'
+  | 'design-ir'
+  | 'token-resolver'
+  | 'registry'
+  | 'generation-plan'
+  | 'code-generation'
+  | 'validation'
 
 export interface GenerationDiagnostic {
   code: string
@@ -294,6 +349,7 @@ export interface GenerationPlan {
     rootNodeId: string
   }
   imports: ImportPlan[]
+  tokenResolution: TokenResolution
   hero: HeroPlan
   diagnostics: GenerationDiagnostic[]
 }
@@ -333,6 +389,7 @@ export interface GenerationReport {
     native: number
     manual: number
   }
+  tokens: TokenResolutionSummary
   validation: {
     schema: 'passed'
     typescript: 'pending' | 'passed' | 'failed'
@@ -360,6 +417,7 @@ export type AnalyzeRequest = z.infer<typeof analyzeRequestSchema>
 export interface AnalyzeResponse {
   schemaVersion: typeof SCHEMA_VERSION
   document: DesignDocument
+  tokenResolution: TokenResolution
   matches: ComponentMatchResult[]
   diagnostics: GenerationDiagnostic[]
   summary: {
@@ -403,6 +461,7 @@ export const evalExpectedSchema = z.object({
       ])
     )
     .optional(),
+  expectedTokens: z.record(z.string(), z.string()).optional(),
   expectedDiagnostics: z.array(z.string().min(1)).optional()
 })
 

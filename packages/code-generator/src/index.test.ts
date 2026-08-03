@@ -10,6 +10,21 @@ const plan: GenerationPlan = {
   versions: { inputSchema: '1.0', registry: '1.0.0', generator: '0.1.0' },
   page: { title: 'Test', description: 'Test page', rootNodeId: 'root' },
   imports: [{ path: '@forge-ui/example-external-ui', names: ['Button'] }],
+  tokenResolution: {
+    schemaVersion: '1.0',
+    tokens: [
+      {
+        path: 'color.brand.primary',
+        type: 'color',
+        level: 'semantic',
+        cssVariable: '--color-brand-primary',
+        cssValue: '#7c5cff',
+        resolvedValue: '#7c5cff'
+      }
+    ],
+    summary: { total: 1, referenced: 0, reused: 0, created: 1, conflicts: 0 },
+    diagnostics: []
+  },
   hero: {
     id: 'hero',
     eyebrow: 'ForgeUI',
@@ -154,6 +169,7 @@ describe('generateProject', () => {
     expect(project.report).toMatchObject({
       nodes: { total: 3, eligibleForComponentMatch: 1 },
       matches: { exact: 1, manual: 0 },
+      tokens: { total: 1, referenced: 0, reused: 0, created: 1, conflicts: 0 },
       validation: { schema: 'passed', runtime: 'skipped', visual: 'skipped' }
     })
   })

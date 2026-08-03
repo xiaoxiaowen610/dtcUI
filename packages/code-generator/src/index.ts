@@ -10,7 +10,7 @@ import {
   type GenerationDiagnostic,
   type GenerationPlan
 } from '@forge-ui/contracts'
-import { stableHash, stableStringify, toCssVariable } from '@forge-ui/shared'
+import { stableHash, stableStringify } from '@forge-ui/shared'
 
 interface GenerateProjectOptions {
   createdAt?: string
@@ -158,22 +158,11 @@ function escapeHtml(value: string): string {
 }
 
 function tokensCss(plan: GenerationPlan): string {
-  const brand = toCssVariable('color.brand.primary')
+  const declarations = plan.tokenResolution.tokens
+    .map((token) => `  ${token.cssVariable}: ${token.cssValue};`)
+    .join('\n')
   return `:root {
-  ${brand}: #7c5cff;
-  --color-brand-secondary: #39d7ff;
-  --color-surface-canvas: #070a12;
-  --color-surface-panel: #101522;
-  --color-surface-raised: #171e2f;
-  --color-text-primary: #f7f8ff;
-  --color-text-secondary: #a9b2c8;
-  --color-border-subtle: rgba(255, 255, 255, 0.1);
-  --space-page-inline: clamp(1.25rem, 4vw, 4.5rem);
-  --space-section-block: clamp(4.5rem, 10vw, 8rem);
-  --radius-control: 0.75rem;
-  --radius-card: 1.5rem;
-  --shadow-glow: 0 30px 100px rgba(124, 92, 255, 0.25);
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+${declarations}
   --forge-generation: "${plan.generationId}";
 }
 `
@@ -391,6 +380,7 @@ export function generateProject(
       native: 0,
       manual
     },
+    tokens: plan.tokenResolution.summary,
     validation: {
       schema: 'passed' as const,
       typescript: 'pending' as const,

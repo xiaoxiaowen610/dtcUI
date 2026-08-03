@@ -33,7 +33,27 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | BL-IR-009 | P1       | Names contain surrounding spaces         | Normalized name is trimmed and source reference preserved        | Auto      |
 | BL-IR-010 | P0       | Tree contains more than 2,000 nodes      | `DESIGN_LIMIT_EXCEEDED` is returned                              | Auto      |
 
-## 3. Registry and component matching
+## 3. Token Resolver
+
+| ID           | Priority | Scenario and input                                | Expected result                                           | Execution |
+| ------------ | -------- | ------------------------------------------------- | --------------------------------------------------------- | --------- |
+| B02-UT-001   | P0       | Primitive color and camelCase path                | Safe normalized value and stable CSS variable             | Auto      |
+| B02-UT-002   | P0       | Semantic alias points to same-type Primitive      | Resolved value and direct `var()` reference are preserved | Auto      |
+| B02-UT-003   | P0       | Self-cycle or multi-node Alias cycle              | `TOKEN_ALIAS_CYCLE` blocks processing                     | Auto      |
+| B02-UT-004   | P0       | Alias target does not exist                       | `TOKEN_REFERENCE_MISSING` blocks processing               | Auto      |
+| B02-UT-005   | P0       | Color aliases a Dimension                         | `TOKEN_TYPE_MISMATCH` blocks processing                   | Auto      |
+| B02-UT-006   | P0       | Duplicate paths or paths map to one CSS variable  | Typed conflict diagnostics block silent overwrite         | Auto      |
+| B02-UT-007   | P0       | Unsafe CSS, NaN Dimension, unsupported unit       | `TOKEN_VALUE_INVALID` blocks generation                   | Auto      |
+| B02-UT-008   | P0       | Same Token set supplied in reverse order          | Resolution and CSS plan are identical                     | Auto      |
+| B02-UT-009   | P1       | Radius type and structured Alias shape            | Versioned contracts accept both                           | Auto      |
+| B02-BL-001   | P1       | Two semantic paths have exact same concrete value | Suggest reuse; preserve both paths                        | Auto      |
+| B02-BL-002   | P1       | Two colors are below the Lab suggestion threshold | Emit non-blocking suggestion; do not merge                | Auto      |
+| B02-PERF-001 | P0       | Resolve 2,000-token Alias chain                   | Completes below 500 ms without call-stack recursion       | Auto      |
+| B02-INT-001  | P0       | Flagship tokens pass through Plan and Codegen     | CSS contains Primitive/Semantic `var()`; report counts    | Auto      |
+| B02-INT-002  | P0       | Cycle reaches Engine pipeline                     | Generation stops before Registry/Codegen                  | Auto      |
+| B02-API-001  | P0       | Cycle reaches `/api/generate`                     | HTTP 400 `TOKEN_ALIAS_CYCLE` with request ID              | Auto      |
+
+## 4. Registry and component matching
 
 | ID         | Priority | Scenario and input                                         | Expected result                                             | Execution |
 | ---------- | -------- | ---------------------------------------------------------- | ----------------------------------------------------------- | --------- |
@@ -54,7 +74,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | BL-REG-015 | P0       | Two components declare the same component ID               | Registry blocks ambiguous match lookup                      | Auto      |
 | BL-REG-016 | P0       | Two imports reuse one local binding from different targets | Registry blocks generated-source binding collisions         | Auto      |
 
-## 4. Generation Plan and code generation
+## 5. Generation Plan and code generation
 
 | ID             | Priority | Scenario and input                                           | Expected result                                                | Execution |
 | -------------- | -------- | ------------------------------------------------------------ | -------------------------------------------------------------- | --------- |
@@ -76,7 +96,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | UT-CODEGEN-008 | P0       | Materialize generated path containing traversal              | Output writer rejects path escaping target root                | Auto      |
 | UT-CODEGEN-009 | P0       | Generation Plan contains mixed default/named imports         | Babel AST emits valid `import Default, { Named }` syntax       | Auto      |
 
-## 5. Engine pipeline and API
+## 6. Engine pipeline and API
 
 | ID          | Priority | Scenario and input                                                              | Expected result                                                        | Execution |
 | ----------- | -------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | --------- |
@@ -95,7 +115,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | API-008     | P1       | `PORT` is absent, valid, fractional, malformed, negative, zero, or above 65,535 | Valid port is retained; every invalid value safely falls back to 4,000 | Auto      |
 | API-009     | P0       | Analyze request body exceeds the shared 5 MB limit                              | Fastify rejects it with HTTP 413 before domain work begins             | Auto      |
 
-## 6. Studio UI and client service
+## 7. Studio UI and client service
 
 | ID     | Priority | User steps                                                           | Expected result                                                                    | Execution  |
 | ------ | -------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------- |
@@ -114,7 +134,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | UI-013 | P1       | Inspect CTA, tabs, device and file controls through accessible roles | Decorative glyphs do not pollute names and selected controls expose `aria-pressed` | Auto/jsdom |
 | UI-014 | P1       | Structured Engine error contains a non-string request ID             | Client rejects the malformed payload and uses the safe header fallback             | Auto       |
 
-## 7. Integration, build and security
+## 8. Integration, build and security
 
 | ID      | Priority | Scenario                                                            | Expected result                      | Execution            |
 | ------- | -------- | ------------------------------------------------------------------- | ------------------------------------ | -------------------- |
@@ -128,7 +148,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | SEC-004 | P1       | Authorization header is logged                                      | Logger configuration redacts header  | Configuration review |
 | SEC-005 | P2       | Preview posts message from foreign origin                           | Message is ignored                   | Phase 4              |
 
-## 8. Fixed evaluation and CI
+## 9. Fixed evaluation and CI
 
 | ID         | Priority | Scenario                                  | Expected result                                           | Execution        |
 | ---------- | -------- | ----------------------------------------- | --------------------------------------------------------- | ---------------- |
@@ -143,7 +163,7 @@ means implemented in Vitest or the build scripts; `Phase 4` is deliberately excl
 | B01-CI-001 | P0       | GitHub Actions quality job                | Pinned install, coverage, check and Eval complete         | Actions workflow |
 | B01-CI-002 | P1       | Eval returns a failed case                | Job fails after writing uploadable diagnostic report      | Actions workflow |
 
-## 9. Exit criteria
+## 10. Exit criteria
 
 - Every automated P0/P1 case passes.
 - No unresolved release-blocking defect remains.

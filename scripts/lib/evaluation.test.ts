@@ -17,6 +17,9 @@ describe('fixed evaluation suite', () => {
     expect(first.cases.map((evalCase) => evalCase.id)).toEqual([
       'flagship-valid',
       'malformed-design-invalid',
+      'token-alias-cycle-invalid',
+      'token-alias-valid',
+      'token-reference-missing-invalid',
       'unknown-component-degraded'
     ])
     expect(JSON.stringify(first)).toBe(JSON.stringify(second))
@@ -43,12 +46,12 @@ describe('fixed evaluation suite', () => {
     const result = runEvaluation(fixedEvalCases)
 
     expect(result.totals).toEqual({
-      cases: 3,
-      passed: 3,
+      cases: 6,
+      passed: 6,
       failed: 0,
-      valid: 1,
+      valid: 2,
       degraded: 1,
-      invalid: 1
+      invalid: 3
     })
     expect(result.cases.every((evalCase) => evalCase.status === 'passed')).toBe(true)
   })
