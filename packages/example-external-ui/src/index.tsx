@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react'
+import type { CSSProperties, PropsWithChildren } from 'react'
 import './styles.css'
 
 export interface ButtonProps extends PropsWithChildren {
@@ -94,5 +94,155 @@ export function ProductPreview({ 'data-forge-node-id': forgeNodeId }: ProductPre
         </div>
       </div>
     </div>
+  )
+}
+
+export interface CardProps extends PropsWithChildren {
+  tone?: 'default' | 'accent'
+  'data-forge-node-id'?: string
+}
+
+export function Card({ children, tone = 'default', 'data-forge-node-id': forgeNodeId }: CardProps) {
+  return (
+    <article className={`externalCard externalCard--${tone}`} data-forge-node-id={forgeNodeId}>
+      {children}
+    </article>
+  )
+}
+
+export interface HeadingProps extends PropsWithChildren {
+  level?: 2 | 3
+  'data-forge-node-id'?: string
+}
+
+export function Heading({ children, level = 2, 'data-forge-node-id': forgeNodeId }: HeadingProps) {
+  return level === 3 ? (
+    <h3 className="externalHeading" data-forge-node-id={forgeNodeId}>
+      {children}
+    </h3>
+  ) : (
+    <h2 className="externalHeading" data-forge-node-id={forgeNodeId}>
+      {children}
+    </h2>
+  )
+}
+
+export interface TextProps extends PropsWithChildren {
+  tone?: 'primary' | 'secondary'
+  'data-forge-node-id'?: string
+}
+
+export function Text({ children, tone = 'primary', 'data-forge-node-id': forgeNodeId }: TextProps) {
+  return (
+    <p className={`externalText externalText--${tone}`} data-forge-node-id={forgeNodeId}>
+      {children}
+    </p>
+  )
+}
+
+export interface ImageProps {
+  src: string
+  alt: string
+  'data-forge-node-id'?: string
+}
+
+export function Image({ src, alt, 'data-forge-node-id': forgeNodeId }: ImageProps) {
+  return <img alt={alt} className="externalImage" data-forge-node-id={forgeNodeId} src={src} />
+}
+
+export interface IconProps {
+  name: string
+  label?: string
+  'data-forge-node-id'?: string
+}
+
+export function Icon({ name, label, 'data-forge-node-id': forgeNodeId }: IconProps) {
+  return (
+    <span
+      aria-hidden={label ? undefined : true}
+      aria-label={label}
+      className="externalIcon"
+      data-forge-node-id={forgeNodeId}
+      role={label ? 'img' : undefined}
+    >
+      {name.slice(0, 1).toUpperCase()}
+    </span>
+  )
+}
+
+interface SectionProps {
+  'data-forge-node-id'?: string
+}
+
+export interface LogoCloudProps extends SectionProps {
+  headline: string
+}
+
+export function LogoCloud({ headline, 'data-forge-node-id': forgeNodeId }: LogoCloudProps) {
+  return (
+    <section className="marketingSection logoCloud" data-forge-node-id={forgeNodeId}>
+      <p>{headline}</p>
+      <div aria-label="Customer logos">Arc · Northstar · Orbit · Summit</div>
+    </section>
+  )
+}
+
+export interface FeatureGridProps extends SectionProps {
+  title: string
+  columns?: 2 | 3 | 4
+}
+
+export function FeatureGrid({
+  title,
+  columns = 3,
+  'data-forge-node-id': forgeNodeId
+}: FeatureGridProps) {
+  return (
+    <section className="marketingSection" data-forge-node-id={forgeNodeId}>
+      <h2>{title}</h2>
+      <div className="featureGrid" style={{ '--feature-columns': columns } as CSSProperties}>
+        {['Map signals', 'Reuse systems', 'Validate output', 'Explain decisions'].map((feature) => (
+          <article key={feature}>{feature}</article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+export interface TestimonialSectionProps extends SectionProps {
+  quote: string
+  author: string
+}
+
+export function TestimonialSection({
+  quote,
+  author,
+  'data-forge-node-id': forgeNodeId
+}: TestimonialSectionProps) {
+  return (
+    <section className="marketingSection testimonial" data-forge-node-id={forgeNodeId}>
+      <blockquote>{quote}</blockquote>
+      <cite>{author}</cite>
+    </section>
+  )
+}
+
+export interface CtaSectionProps extends SectionProps {
+  title: string
+  actionLabel: string
+  href: string
+}
+
+export function CtaSection({
+  title,
+  actionLabel,
+  href,
+  'data-forge-node-id': forgeNodeId
+}: CtaSectionProps) {
+  return (
+    <section className="marketingSection ctaSection" data-forge-node-id={forgeNodeId}>
+      <h2>{title}</h2>
+      <Button href={href}>{actionLabel}</Button>
+    </section>
   )
 }

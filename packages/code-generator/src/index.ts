@@ -8,7 +8,8 @@ import {
   type GeneratedFile,
   type GeneratedProject,
   type GenerationDiagnostic,
-  type GenerationPlan
+  type GenerationPlan,
+  type RegisteredSectionPlan
 } from '@forge-ui/contracts'
 import { stableHash, stableStringify } from '@forge-ui/shared'
 
@@ -132,6 +133,35 @@ function buildHeroProgram(plan: GenerationPlan): t.File {
   )
 
   return t.file(t.program([...registryImports, styleImport, heroFunction]))
+}
+
+function buildRegisteredSectionProgram(section: RegisteredSectionPlan): t.File {
+  const specifier =
+    section.importStyle === 'default'
+      ? t.importDefaultSpecifier(t.identifier(section.exportName))
+      : t.importSpecifier(t.identifier(section.exportName), t.identifier(section.exportName))
+  const component = element(
+    section.exportName,
+    [
+      jsxAttribute('data-forge-node-id', section.nodeId),
+      ...Object.entries(section.props)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([name, value]) => jsxAttribute(name, value))
+    ],
+    [],
+    true
+  )
+  const declaration = t.exportNamedDeclaration(
+    t.functionDeclaration(
+      t.identifier(section.functionName),
+      [],
+      t.blockStatement([t.returnStatement(component)])
+    )
+  )
+
+  return t.file(
+    t.program([t.importDeclaration([specifier], t.stringLiteral(section.importPath)), declaration])
+  )
 }
 
 function printTsx(file: t.File): string {
@@ -275,14 +305,22 @@ a {
 }
 `
 
-function landingPageSource(): string {
+function landingPageSource(plan: GenerationPlan): string {
+  const imports = plan.sections
+    .map(
+      (section) =>
+        `import { ${section.functionName} } from './sections/${section.fileName.replace(/\.tsx$/, '')}'`
+    )
+    .join('\n')
+  const sections = plan.sections.map((section) => `      <${section.functionName} />`).join('\n')
   return `import { Hero } from './sections/Hero'
+${imports ? `${imports}\n` : ''}
 
 export default function LandingPage() {
   return (
     <main>
       <Hero />
-    </main>
+${sections ? `${sections}\n` : ''}    </main>
   )
 }
 `
@@ -334,6 +372,9 @@ export function generateProject(
 ): GeneratedProject {
   const createdAt = options.createdAt ?? new Date().toISOString()
   const exact = options.matches.filter((match) => match.strategy === 'exact-component').length
+  const adapted = options.matches.filter((match) => match.strategy === 'adapted-component').length
+  const recipes = options.matches.filter((match) => match.strategy === 'registered-recipe').length
+  const native = options.matches.filter((match) => match.strategy === 'native-element').length
   const manual = options.matches.filter((match) => match.strategy === 'manual-review').length
   const diagnostics: GenerationDiagnostic[] = [
     ...plan.diagnostics,
@@ -375,9 +416,9 @@ export function generateProject(
     },
     matches: {
       exact,
-      adapted: 0,
-      recipes: 0,
-      native: 0,
+      adapted,
+      recipes,
+      native,
       manual
     },
     tokens: plan.tokenResolution.summary,
@@ -449,13 +490,20 @@ export function generateProject(
       `<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n    <meta name="description" content="${escapeHtml(plan.page.description)}" />\n    <title>${escapeHtml(plan.page.title)}</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/src/main.tsx"></script>\n  </body>\n</html>\n`
     ),
     file('src/main.tsx', 'tsx', mainSource()),
-    file('src/LandingPage.tsx', 'tsx', landingPageSource()),
+    file('src/LandingPage.tsx', 'tsx', landingPageSource(plan)),
     file('src/sections/Hero.tsx', 'tsx', printTsx(buildHeroProgram(plan))),
     file('src/sections/Hero.module.css', 'css', heroCss),
     file('src/tokens.css', 'css', tokensCss(plan)),
     file('src/global.css', 'css', globalCss),
     file('generation-manifest.json', 'json', `${stableStringify(manifest, 2)}\n`),
-    file('generation-report.json', 'json', `${stableStringify(report, 2)}\n`)
+    file('generation-report.json', 'json', `${stableStringify(report, 2)}\n`),
+    ...plan.sections.map((section) =>
+      file(
+        `src/sections/${section.fileName}`,
+        'tsx',
+        printTsx(buildRegisteredSectionProgram(section))
+      )
+    )
   ].sort((left, right) => left.path.localeCompare(right.path))
 
   return { files: generatedFiles, manifest, report, diagnostics }

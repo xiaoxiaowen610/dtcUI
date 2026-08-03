@@ -185,6 +185,51 @@
             "accessibility": { "label": "Product analytics dashboard preview" }
           }
         ]
+      },
+      {
+        "id": "logo-cloud",
+        "name": "Customer Logo Cloud",
+        "type": "component",
+        "semantic": "logo-cloud",
+        "componentKey": "external.section.logo-cloud",
+        "props": { "headline": "Trusted by teams building dependable AI products" }
+      },
+      {
+        "id": "feature-grid",
+        "name": "Feature Grid",
+        "type": "component",
+        "semantic": "feature-grid",
+        "componentKey": "external.section.feature-grid",
+        "props": { "title": "A workbench built for engineering trust", "columns": 4 },
+        "responsive": {
+          "layout": {
+            "mobile": { "columns": 1 },
+            "desktop": { "columns": 4 }
+          }
+        }
+      },
+      {
+        "id": "testimonial",
+        "name": "Customer Testimonial",
+        "type": "component",
+        "semantic": "testimonial",
+        "componentKey": "external.section.testimonial",
+        "props": {
+          "quote": "ForgeUI turns design intent into code we can actually review.",
+          "author": "Mina Chen, Design Systems Lead"
+        }
+      },
+      {
+        "id": "cta-section",
+        "name": "Closing Call to Action",
+        "type": "component",
+        "semantic": "cta-section",
+        "componentKey": "external.section.cta",
+        "props": {
+          "title": "Build from intent, ship with evidence.",
+          "actionLabel": "Generate your first project",
+          "href": "#start"
+        }
       }
     ]
   }

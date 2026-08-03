@@ -9,22 +9,25 @@ incompatible inputs become explainable diagnostics or manual review instead of s
 
 ## Current status
 
-The repository currently targets the Phase 1 vertical slice defined by the PRD and technical design:
+The repository currently includes the Phase 1 vertical slice and the deterministic Token/Matcher work
+from Phase 2 of the reviewed technical design:
 
 - versioned input, IR, Registry, Generation Plan, manifest, and report contracts;
 - AI SaaS flagship preset;
 - stable Design IR normalization and duplicate-ID protection;
 - deterministic Token Resolver with aliases, cycle/missing/type guards, similarity suggestions, and input-driven CSS Variables;
-- minimal external component package and Registry exact matching;
+- external component package with 8 base components and 4 marketing Sections;
+- deterministic `Exact -> Adapter -> Recipe -> Native -> Manual` matching with hard constraints,
+  stable semantic scoring, and explainable outcomes;
 - deterministic Generation Plan and Babel AST TSX generation;
 - localhost Fastify Engine with health, analyze, and generate endpoints;
 - React Studio for running and inspecting the flagship pipeline;
-- repeatable tests, type checking, workspace builds, and a real Vite build of generated output.
+- generated Hero plus four registered marketing Sections;
+- repeatable tests, type checking, workspace builds, and a real Vite build of generated output;
 - fixed valid/degraded/invalid evaluations and a pinned GitHub Actions quality gate.
 
-Semantic component scoring, AI Patch, version history, sandboxed preview, ZIP export,
-Playwright layout assertions, and visual baselines remain later roadmap phases. They are not claimed as
-implemented behavior.
+AI Patch, version history, sandboxed preview, ZIP export, Playwright layout assertions, and visual
+baselines remain later roadmap phases. They are not claimed as implemented behavior.
 
 ## Why this architecture
 
@@ -76,7 +79,7 @@ pnpm evals
 See the [test strategy](./docs/testing/TEST-STRATEGY.md),
 [traceable test cases](./docs/testing/TEST-CASES.md), and
 [latest execution report](./docs/testing/TEST-REPORT.md). Browser screenshot and layout baselines
-remain an explicit Phase 4 gate and are not counted as passed in Phase 1.
+remain an explicit Phase 4 gate and are not counted as passed through Batch 03.
 
 The [batch execution plan](./docs/batches/README.md) defines the stacked branch order, task IDs,
 test cases, and acceptance gate for every remaining MVP increment.
@@ -103,7 +106,7 @@ packages/
   contracts/               Versioned Zod schemas and API contracts
   design-ir/               Deterministic input normalization
   token-resolver/          Alias graph, value validation, diagnostics, CSS token plan
-  component-registry/      Manifest validation and exact matching
+  component-registry/      Hard constraints and five-stage deterministic matching
   generation-plan/         Stable page/file/import plan
   code-generator/          Babel AST TSX and project generation
   example-external-ui/     Independent registered React components
@@ -116,22 +119,24 @@ docs/architecture-decisions/
 
 ## Engine API
 
-| Method | Path            | Phase 1 behavior                                                |
-| ------ | --------------- | --------------------------------------------------------------- |
-| `GET`  | `/api/health`   | Returns Engine and schema versions                              |
-| `POST` | `/api/analyze`  | Validates input/Registry, builds IR, and returns exact matches  |
-| `POST` | `/api/generate` | Runs analyze -> plan -> AST generation and returns files/report |
+| Method | Path            | Current behavior                                                   |
+| ------ | --------------- | ------------------------------------------------------------------ |
+| `GET`  | `/api/health`   | Returns Engine and schema versions                                 |
+| `POST` | `/api/analyze`  | Validates input/Registry, builds IR, and returns explained matches |
+| `POST` | `/api/generate` | Runs analyze -> plan -> AST generation and returns files/report    |
 
 Future API paths in the technical design are added only when their validation and failure behavior exist.
 
 ## Trust and safety boundaries
 
 - Input bytes, node count, depth, text length, schema, and duplicate IDs are validated before generation.
-- Registry imports must stay inside declared allowlisted roots.
+- Registry imports must stay inside declared allowlisted roots and cannot contain traversal segments.
 - Design copy, node names, metadata, manifests, and future AI output are treated as untrusted data.
 - User scripts, arbitrary dependencies, lifecycle scripts, and dynamic imports are never executed.
 - Model credentials belong only to the local Engine environment.
-- Unknown component capability degrades to a diagnostic/manual-review path; it is not guessed.
+- Hard prop, slot, capability, and required-token failures cannot be overridden by semantic score.
+- Unknown component capability degrades through registered Recipe/native semantics or manual review;
+  it is not guessed.
 
 See [AGENTS.md](./AGENTS.md) for contributor rules and architecture boundaries.
 
@@ -145,8 +150,8 @@ is isolated to the manifest boundary and excluded from deterministic source comp
 
 | Phase | Outcome                                                                       |
 | ----- | ----------------------------------------------------------------------------- |
-| 1     | Contract -> IR -> exact match -> plan -> AST -> real build                    |
-| 2     | Tokens complete; hard constraints, adapters/recipes and semantic matcher next |
+| 1     | Contract -> IR -> exact match -> plan -> AST -> real build (complete)         |
+| 2     | Tokens, hard constraints, Adapter/Recipe, semantic matcher (complete)         |
 | 3     | Three-panel Studio, linked tree/preview/code, responsive resolver             |
 | 4     | full validator, isolated preview, Playwright, visual checks, ZIP export       |
 | 5     | bounded AI Patch, version guard, immutable apply, rollback, IndexedDB history |
@@ -158,11 +163,11 @@ ForgeUI does not publish invented productivity or accuracy numbers. Any future c
 build pass rate, patch success rate, timing, accessibility, or visual-regression claim must be reproduced
 from committed eval cases in a fixed environment.
 
-Known Phase 1 limitations:
+Known limitations through Batch 03:
 
-- only the AI SaaS preset and exact Source Key matching are complete;
 - Token aliases and safety failures are complete; interactive conflict choices remain Studio work;
-- only the Hero vertical slice is generated;
+- the flagship generates Hero plus four registered Sections; Recipe/native/manual outcomes are
+  reported but require the later Studio confirmation workflow before they alter generated files;
 - no untrusted package installation or browser execution sandbox exists yet;
 - no screenshot-to-code or arbitrary Figma import exists;
 - validation covers schemas, types, tests, workspace builds, and generated Vite output, not visual fidelity.

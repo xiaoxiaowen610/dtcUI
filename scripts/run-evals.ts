@@ -18,7 +18,7 @@ for (const evalCase of report.cases) {
 }
 
 process.stdout.write(
-  `Evaluation: ${report.totals.passed}/${report.totals.cases} passed; report ${outputPath}\n`
+  `Evaluation: ${report.totals.passed}/${report.totals.cases} passed; Top-1 ${report.totals.matching.correctTop1}/${report.totals.matching.labeledNodes} (${(report.totals.matching.top1Accuracy * 100).toFixed(1)}%); report ${outputPath}\n`
 )
 
 if (report.totals.failed > 0) {

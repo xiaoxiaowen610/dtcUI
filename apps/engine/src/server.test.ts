@@ -41,9 +41,9 @@ describe('Engine HTTP API', () => {
 
     expect(response.statusCode).toBe(200)
     expect(response.json().summary).toEqual({
-      totalNodes: 8,
-      componentNodes: 3,
-      exactMatches: 3,
+      totalNodes: 12,
+      componentNodes: 7,
+      exactMatches: 7,
       manualReview: 0
     })
   })
@@ -58,7 +58,7 @@ describe('Engine HTTP API', () => {
 
     expect(response.statusCode).toBe(200)
     expect(body.plan.generationId).toMatch(/^generation_[0-9a-f]{8}$/)
-    expect(body.project.files).toHaveLength(12)
+    expect(body.project.files).toHaveLength(16)
     expect(body.project.manifest.registry).toEqual({
       id: 'forgeui-example-external-ui',
       version: '1.0.0'

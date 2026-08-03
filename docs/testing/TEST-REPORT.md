@@ -1,32 +1,32 @@
-# ForgeUI Through Batch 02 Test Execution Report
+# ForgeUI Through Batch 03 Test Execution Report
 
 ## 1. Result
 
-**PASS** — all automated quality gates through Batch 02 completed successfully on 2026-08-01.
+**PASS** — all automated quality gates through Batch 03 completed successfully on 2026-08-01.
 
 | Gate                             | Result | Evidence                                                      |
 | -------------------------------- | ------ | ------------------------------------------------------------- |
 | TypeScript                       | Passed | `tsc --noEmit` returned exit code 0                           |
-| Unit/business/API/UI/integration | Passed | 13 files, 117 tests, 0 failed                                 |
+| Unit/business/API/UI/integration | Passed | 13 files, 135 tests, 0 failed                                 |
 | Coverage                         | Passed | All configured global thresholds exceeded                     |
 | Engine production build          | Passed | `tsup` produced the Node 24 ESM bundle                        |
 | Studio production build          | Passed | Vite transformed 71 modules and emitted the production bundle |
 | Generated flagship TypeScript    | Passed | Materialized output type-check succeeded                      |
-| Generated flagship Vite build    | Passed | Production build succeeded with 3 exact component matches     |
-| Fixed evaluation suite           | Passed | valid/degraded/invalid cases: 6/6 passed                      |
+| Generated flagship Vite build    | Passed | 7 Exact matches, 4 Section modules, 16 generated files built  |
+| Fixed evaluation suite           | Passed | 6/6 cases; labeled Top-1 13/13 (100.0% on this fixed set)     |
 | Token performance                | Passed | 2,000-token alias chain remained below the 500 ms unit budget |
 
 ## 2. Environment
 
-| Item            | Value                            |
-| --------------- | -------------------------------- |
-| Baseline commit | `7b8b1ee` (remote Batch 01)      |
-| Branch          | `agent/batch-02-token-engine`    |
-| Node.js         | `v24.14.0`                       |
-| pnpm            | `11.7.0`                         |
-| Test runner     | Vitest `4.1.10`                  |
-| UI environment  | jsdom `30.0.1` + Testing Library |
-| Execution date  | 2026-08-01 (Asia/Tokyo)          |
+| Item            | Value                               |
+| --------------- | ----------------------------------- |
+| Baseline commit | `05ecbce` (remote Batch 02)         |
+| Branch          | `agent/batch-03-component-matching` |
+| Node.js         | `v24.14.0`                          |
+| pnpm            | `11.7.0`                            |
+| Test runner     | Vitest `4.1.10`                     |
+| UI environment  | jsdom `30.0.1` + Testing Library    |
+| Execution date  | 2026-08-01 (Asia/Tokyo)             |
 
 ## 3. Coverage
 
@@ -34,28 +34,31 @@ Command: `pnpm test:coverage`
 
 | Metric     |           Actual | Gate | Result |
 | ---------- | ---------------: | ---: | ------ |
-| Statements | 91.97% (596/648) |  75% | Passed |
-| Branches   | 81.45% (404/496) |  70% | Passed |
-| Functions  | 95.72% (179/187) |  75% | Passed |
-| Lines      | 93.05% (549/590) |  75% | Passed |
+| Statements | 91.05% (814/894) |  75% | Passed |
+| Branches   | 81.38% (564/693) |  70% | Passed |
+| Functions  | 94.87% (222/234) |  75% | Passed |
+| Lines      | 92.50% (741/801) |  75% | Passed |
 
-The coverage denominator is restricted to Phase 1 production logic. The example external UI package
-is excluded because it is a fixture dependency, not ForgeUI generation logic.
+The coverage denominator is restricted to ForgeUI production logic implemented through Batch 03. The
+example external UI package is excluded because it is a fixture dependency, not ForgeUI generation logic.
 
 ## 4. Defects found and corrected
 
-| ID      | Severity | Finding                                                                                                                                                                       | Correction                                                                                                                        | Regression cases                                                          |
-| ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| DEF-001 | P0       | Registry matching accepted wrong primitive types, illegal enum values, and unknown props as exact matches. Enum definitions could also omit their allowed values.             | Added manifest validation and deterministic prop compatibility diagnostics; incompatible components now degrade to manual review. | BL-REG-005–011                                                            |
-| DEF-002 | P1       | Studio assumed every failed Engine response was valid JSON, which could surface `undefined: undefined` or a JSON parse error instead of useful diagnostics.                   | Added `EngineRequestError`, preserved structured code/message/request ID/status, and added a safe non-JSON fallback.              | UI-008, UI-009                                                            |
-| DEF-003 | P1       | Engine startup accepted zero, negative, fractional, partially numeric, and out-of-range ports.                                                                                | Added strict integer/range validation with a deterministic 4,000 fallback.                                                        | API-008                                                                   |
-| DEF-004 | P1       | Unexpected Engine failures were returned with HTTP 400, incorrectly classifying server faults as client faults.                                                               | Added error-to-status mapping so `INTERNAL_ERROR` returns HTTP 500 while recoverable contract failures remain HTTP 400.           | Error mapper branch review; public error contracts covered by API-004–006 |
-| DEF-005 | P0       | Registry allowed `style: default`, but Generation Plan and Babel output always emitted named imports, producing uncompilable source for valid manifests.                      | Preserved default bindings in `ImportPlan` and emitted mixed/default Babel import specifiers.                                     | BL-PLAN-008, UT-CODEGEN-009                                               |
-| DEF-006 | P0       | Invalid export/prop identifiers, duplicate component IDs, conflicting defaults, and colliding local import bindings could pass Registry validation and reach code generation. | Added binding, JSX attribute, uniqueness, default-binding, and cross-import collision guards with typed diagnostics.              | BL-REG-012–016                                                            |
-| DEF-007 | P0       | Multiple Hero semantics were silently resolved to the first node, hiding ambiguous input.                                                                                     | Required exactly one Hero and added `HERO_SECTION_AMBIGUOUS`.                                                                     | BL-PLAN-007                                                               |
-| DEF-008 | P1       | Studio error UI omitted the request ID and an explicit recovery action; decorative glyphs polluted accessible button names and selection state was visual-only.               | Added request ID display, retry flow, hidden decorative glyphs, alert semantics, and `aria-pressed` state.                        | UI-004, UI-012, UI-013                                                    |
-| DEF-009 | P1       | Whitespace-only node names passed the versioned input schema.                                                                                                                 | Trimmed and rejected blank node names at the contract boundary.                                                                   | UT-CONTRACT-006                                                           |
-| DEF-010 | P1       | The Studio client trusted non-string request IDs in otherwise JSON-shaped Engine errors.                                                                                      | Tightened the response guard and retained the safe response-header fallback.                                                      | UI-014                                                                    |
+| ID      | Severity | Finding                                                                                                                                                                       | Correction                                                                                                                             | Regression cases                                                          |
+| ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| DEF-001 | P0       | Registry matching accepted wrong primitive types, illegal enum values, and unknown props as exact matches. Enum definitions could also omit their allowed values.             | Added manifest validation and deterministic prop compatibility diagnostics; incompatible components now degrade to manual review.      | BL-REG-005–011                                                            |
+| DEF-002 | P1       | Studio assumed every failed Engine response was valid JSON, which could surface `undefined: undefined` or a JSON parse error instead of useful diagnostics.                   | Added `EngineRequestError`, preserved structured code/message/request ID/status, and added a safe non-JSON fallback.                   | UI-008, UI-009                                                            |
+| DEF-003 | P1       | Engine startup accepted zero, negative, fractional, partially numeric, and out-of-range ports.                                                                                | Added strict integer/range validation with a deterministic 4,000 fallback.                                                             | API-008                                                                   |
+| DEF-004 | P1       | Unexpected Engine failures were returned with HTTP 400, incorrectly classifying server faults as client faults.                                                               | Added error-to-status mapping so `INTERNAL_ERROR` returns HTTP 500 while recoverable contract failures remain HTTP 400.                | Error mapper branch review; public error contracts covered by API-004–006 |
+| DEF-005 | P0       | Registry allowed `style: default`, but Generation Plan and Babel output always emitted named imports, producing uncompilable source for valid manifests.                      | Preserved default bindings in `ImportPlan` and emitted mixed/default Babel import specifiers.                                          | BL-PLAN-008, UT-CODEGEN-009                                               |
+| DEF-006 | P0       | Invalid export/prop identifiers, duplicate component IDs, conflicting defaults, and colliding local import bindings could pass Registry validation and reach code generation. | Added binding, JSX attribute, uniqueness, default-binding, and cross-import collision guards with typed diagnostics.                   | BL-REG-012–016                                                            |
+| DEF-007 | P0       | Multiple Hero semantics were silently resolved to the first node, hiding ambiguous input.                                                                                     | Required exactly one Hero and added `HERO_SECTION_AMBIGUOUS`.                                                                          | BL-PLAN-007                                                               |
+| DEF-008 | P1       | Studio error UI omitted the request ID and an explicit recovery action; decorative glyphs polluted accessible button names and selection state was visual-only.               | Added request ID display, retry flow, hidden decorative glyphs, alert semantics, and `aria-pressed` state.                             | UI-004, UI-012, UI-013                                                    |
+| DEF-009 | P1       | Whitespace-only node names passed the versioned input schema.                                                                                                                 | Trimmed and rejected blank node names at the contract boundary.                                                                        | UT-CONTRACT-006                                                           |
+| DEF-010 | P1       | The Studio client trusted non-string request IDs in otherwise JSON-shaped Engine errors.                                                                                      | Tightened the response guard and retained the safe response-header fallback.                                                           | UI-014                                                                    |
+| DEF-011 | P0       | An import such as `@example/ui/../../untrusted` passed the prefix allowlist despite containing traversal segments.                                                            | Added segment-level import validation before matching or code generation.                                                              | B03-SEC-001                                                               |
+| DEF-012 | P1       | Generation Report hardcoded Adapter, Recipe, and Native counters to zero even when real match results used those strategies.                                                  | Derived every strategy count from the actual match collection.                                                                         | B03-REPORT-001                                                            |
+| DEF-013 | P0       | A generated Section wrapper could have the same local name as its imported Registry component (`FeatureGrid`), producing invalid TypeScript.                                  | Generation Plan now reserves Hero/import bindings and assigns a deterministic conflict-free wrapper name such as `FeatureGridSection`. | B03-CODEGEN-001 plus generated TypeScript/Vite validation                 |
 
 No P0 or P1 product defect remains open from this execution.
 
@@ -78,6 +81,13 @@ aliases, and writes their stable values into `tokens.css`. Duplicate paths, CSS-
 missing references, type mismatches, cycles and unsafe CSS are blocking failures; exact/similar values
 remain non-blocking review suggestions.
 
+Batch 03 added the five-stage deterministic matcher, declaration-only Adapters, registered Recipes,
+safe native/manual fallbacks, 8 base components, and 4 marketing Sections. The test suite covers hard
+prop/slot/capability/token constraints, semantic thresholds, stable tie-breaks, invalid Registry rules,
+real report counters, and labeled Top-1 evaluation. A deliberate generated-project validation exposed
+the Section/import binding collision; after the naming fix, both TypeScript and Vite passed with all
+16 generated files.
+
 Final commands:
 
 ```bash
@@ -97,7 +107,8 @@ The following are not counted as passed:
 - fixed-viewport overflow/overlap checks;
 - browser axe automation;
 - isolated preview origin/CSP checks;
-- AI Patch, rollback, ZIP export, and IndexedDB history.
+- AI Patch, rollback, ZIP export, and IndexedDB history;
+- interactive confirmation and persistence of Recipe/native/manual project overrides.
 
 They depend on Phase 4/5 features that are not implemented. Treating them as skipped keeps the report
 consistent with the product and technical design rather than inventing coverage.

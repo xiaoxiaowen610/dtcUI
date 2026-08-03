@@ -183,3 +183,93 @@
     transform: none;
   }
 }
+
+.externalCard,
+.featureGrid article {
+  padding: 1.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-panel);
+}
+
+.externalCard--accent {
+  border-color: var(--color-brand-primary);
+}
+
+.externalHeading {
+  color: var(--color-text-primary);
+}
+
+.externalText--primary {
+  color: var(--color-text-primary);
+}
+
+.externalText--secondary {
+  color: var(--color-text-secondary);
+}
+
+.externalImage {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.externalIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-control);
+  color: var(--color-surface-canvas);
+  background: var(--color-brand-secondary);
+  font-weight: 800;
+}
+
+.marketingSection {
+  width: min(100% - (2 * var(--space-page-inline)), 80rem);
+  margin: 0 auto;
+  padding: var(--space-section-block) 0;
+  color: var(--color-text-primary);
+}
+
+.logoCloud,
+.testimonial,
+.ctaSection {
+  text-align: center;
+}
+
+.logoCloud div {
+  margin-top: 1.5rem;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+  word-spacing: 2rem;
+}
+
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(var(--feature-columns), minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.testimonial blockquote {
+  max-width: 34ch;
+  margin: 0 auto 1rem;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+}
+
+.testimonial cite {
+  color: var(--color-text-secondary);
+}
+
+.ctaSection {
+  margin-bottom: var(--space-section-block);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-panel);
+}
+
+@media (max-width: 800px) {
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -241,6 +241,31 @@ export const propDefinitionSchema = z.object({
   values: z.array(z.union([z.string(), z.number(), z.boolean()])).optional()
 })
 
+export const componentCapabilitySchema = z.enum([
+  'action',
+  'link',
+  'layout',
+  'content',
+  'visual',
+  'responsive',
+  'children'
+])
+
+export type ComponentCapability = z.infer<typeof componentCapabilitySchema>
+
+export const slotDefinitionSchema = z.object({
+  name: z.string().min(1),
+  accepts: z.array(z.enum(['text', 'icon', 'image', 'component', 'node-list'])).min(1),
+  required: z.boolean().optional()
+})
+
+export type SlotDefinition = z.infer<typeof slotDefinitionSchema>
+
+export const fallbackDefinitionSchema = z.object({
+  nativeElement: z.enum(['button', 'a', 'section', 'div', 'p', 'h2', 'img']).optional(),
+  manualReview: z.boolean().optional()
+})
+
 export const registeredComponentSchema = z.object({
   id: z.string().min(1),
   displayName: z.string().min(1),
@@ -252,10 +277,30 @@ export const registeredComponentSchema = z.object({
   sourceKeys: z.array(z.string().min(1)).optional(),
   semantics: z.array(z.string().min(1)),
   props: z.array(propDefinitionSchema),
-  capabilities: z.array(
-    z.enum(['action', 'link', 'layout', 'content', 'visual', 'responsive', 'children'])
-  ),
-  requiredTokens: z.array(z.string().min(1)).optional()
+  slots: z.array(slotDefinitionSchema).optional(),
+  capabilities: z.array(componentCapabilitySchema),
+  requiredTokens: z.array(z.string().min(1)).optional(),
+  fallback: fallbackDefinitionSchema.optional()
+})
+
+export const propAdapterSchema = z.object({
+  id: z.string().min(1),
+  targetComponentId: z.string().min(1),
+  sourceKeys: z.array(z.string().min(1)).optional(),
+  semantics: z.array(z.string().min(1)).optional(),
+  propMap: z.record(z.string(), z.string().min(1)).default({}),
+  defaults: z.record(z.string(), z.unknown()).optional(),
+  enumMap: z
+    .record(z.string(), z.record(z.string(), z.union([z.string(), z.number(), z.boolean()])))
+    .optional()
+})
+
+export const compositionRecipeSchema = z.object({
+  id: z.string().min(1),
+  displayName: z.string().min(1),
+  semantics: z.array(z.string().min(1)).min(1),
+  componentIds: z.array(z.string().min(1)).min(1),
+  requiredCapabilities: z.array(componentCapabilitySchema).optional()
 })
 
 export const componentRegistryManifestSchema = z.object({
@@ -267,11 +312,15 @@ export const componentRegistryManifestSchema = z.object({
     version: z.string().min(1),
     allowedImportRoots: z.array(z.string().min(1)).min(1)
   }),
-  components: z.array(registeredComponentSchema).min(1)
+  components: z.array(registeredComponentSchema).min(1),
+  adapters: z.array(propAdapterSchema).optional(),
+  recipes: z.array(compositionRecipeSchema).optional()
 })
 
 export type PropDefinition = z.infer<typeof propDefinitionSchema>
 export type RegisteredComponent = z.infer<typeof registeredComponentSchema>
+export type PropAdapter = z.infer<typeof propAdapterSchema>
+export type CompositionRecipe = z.infer<typeof compositionRecipeSchema>
 export type ComponentRegistryManifest = z.infer<typeof componentRegistryManifestSchema>
 
 export type MatchStrategy =
@@ -280,6 +329,9 @@ export type MatchStrategy =
 export interface ComponentMatchResult {
   nodeId: string
   componentId?: string
+  recipeId?: string
+  nativeElement?: 'button' | 'a' | 'section' | 'div' | 'p' | 'h2' | 'img'
+  adaptedProps?: Record<string, unknown>
   strategy: MatchStrategy
   ruleScore?: number
   confidence: 'high' | 'medium' | 'low'
@@ -334,6 +386,16 @@ export interface HeroPlan {
   }
 }
 
+export interface RegisteredSectionPlan {
+  nodeId: string
+  functionName: string
+  fileName: string
+  exportName: string
+  importPath: string
+  importStyle: 'named' | 'default'
+  props: Record<string, unknown>
+}
+
 export interface GenerationPlan {
   schemaVersion: typeof SCHEMA_VERSION
   generationId: string
@@ -351,6 +413,7 @@ export interface GenerationPlan {
   imports: ImportPlan[]
   tokenResolution: TokenResolution
   hero: HeroPlan
+  sections: RegisteredSectionPlan[]
   diagnostics: GenerationDiagnostic[]
 }
 

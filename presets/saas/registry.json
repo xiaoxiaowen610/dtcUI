@@ -26,7 +26,9 @@
         },
         { "name": "href", "type": "string" }
       ],
-      "capabilities": ["action", "link", "content"]
+      "slots": [{ "name": "content", "accepts": ["text"], "required": true }],
+      "capabilities": ["action", "link", "content"],
+      "requiredTokens": ["radius.control", "color.brand.primary"]
     },
     {
       "id": "external-product-preview",
@@ -39,7 +41,8 @@
       "sourceKeys": ["external.product-preview"],
       "semantics": ["product-preview", "dashboard-preview"],
       "props": [],
-      "capabilities": ["visual", "responsive"]
+      "capabilities": ["visual", "responsive"],
+      "requiredTokens": ["radius.card", "shadow.glow"]
     },
     {
       "id": "external-badge",
@@ -52,7 +55,167 @@
       "sourceKeys": ["external.badge"],
       "semantics": ["badge", "eyebrow"],
       "props": [],
+      "slots": [{ "name": "content", "accepts": ["text"], "required": true }],
       "capabilities": ["content", "children"]
+    },
+    {
+      "id": "external-card",
+      "displayName": "Card",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Card",
+        "style": "named"
+      },
+      "sourceKeys": ["external.card"],
+      "semantics": ["card", "feature-card"],
+      "props": [{ "name": "tone", "type": "enum", "values": ["default", "accent"] }],
+      "slots": [{ "name": "children", "accepts": ["text", "node-list"] }],
+      "capabilities": ["layout", "content", "children"],
+      "requiredTokens": ["radius.card"]
+    },
+    {
+      "id": "external-heading",
+      "displayName": "Heading",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Heading",
+        "style": "named"
+      },
+      "sourceKeys": ["external.heading"],
+      "semantics": ["heading", "title"],
+      "props": [{ "name": "level", "type": "enum", "values": [2, 3] }],
+      "slots": [{ "name": "content", "accepts": ["text"], "required": true }],
+      "capabilities": ["content", "children"]
+    },
+    {
+      "id": "external-text",
+      "displayName": "Text",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Text",
+        "style": "named"
+      },
+      "sourceKeys": ["external.text"],
+      "semantics": ["text", "description"],
+      "props": [{ "name": "tone", "type": "enum", "values": ["primary", "secondary"] }],
+      "slots": [{ "name": "content", "accepts": ["text"], "required": true }],
+      "capabilities": ["content", "children"]
+    },
+    {
+      "id": "external-image",
+      "displayName": "Image",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Image",
+        "style": "named"
+      },
+      "sourceKeys": ["external.image"],
+      "semantics": ["image", "illustration"],
+      "props": [
+        { "name": "src", "type": "string", "required": true },
+        { "name": "alt", "type": "string", "required": true }
+      ],
+      "capabilities": ["visual", "responsive"]
+    },
+    {
+      "id": "external-icon",
+      "displayName": "Icon",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "Icon",
+        "style": "named"
+      },
+      "sourceKeys": ["external.icon"],
+      "semantics": ["icon", "status-icon"],
+      "props": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "label", "type": "string" }
+      ],
+      "capabilities": ["visual", "content"]
+    },
+    {
+      "id": "section-logo-cloud",
+      "displayName": "LogoCloud",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "LogoCloud",
+        "style": "named"
+      },
+      "sourceKeys": ["external.section.logo-cloud"],
+      "semantics": ["logo-cloud"],
+      "props": [{ "name": "headline", "type": "string", "required": true }],
+      "capabilities": ["layout", "content", "visual", "responsive"],
+      "requiredTokens": ["space.section.block"]
+    },
+    {
+      "id": "section-feature-grid",
+      "displayName": "FeatureGrid",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "FeatureGrid",
+        "style": "named"
+      },
+      "sourceKeys": ["external.section.feature-grid"],
+      "semantics": ["feature-grid"],
+      "props": [
+        { "name": "title", "type": "string", "required": true },
+        { "name": "columns", "type": "enum", "values": [2, 3, 4] }
+      ],
+      "capabilities": ["layout", "content", "responsive"],
+      "requiredTokens": ["radius.card"]
+    },
+    {
+      "id": "section-testimonial",
+      "displayName": "TestimonialSection",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "TestimonialSection",
+        "style": "named"
+      },
+      "sourceKeys": ["external.section.testimonial"],
+      "semantics": ["testimonial"],
+      "props": [
+        { "name": "quote", "type": "string", "required": true },
+        { "name": "author", "type": "string", "required": true }
+      ],
+      "capabilities": ["layout", "content", "responsive"]
+    },
+    {
+      "id": "section-cta",
+      "displayName": "CtaSection",
+      "import": {
+        "path": "@forge-ui/example-external-ui",
+        "exportName": "CtaSection",
+        "style": "named"
+      },
+      "sourceKeys": ["external.section.cta"],
+      "semantics": ["cta-section"],
+      "props": [
+        { "name": "title", "type": "string", "required": true },
+        { "name": "actionLabel", "type": "string", "required": true },
+        { "name": "href", "type": "string", "required": true }
+      ],
+      "capabilities": ["layout", "content", "responsive", "action", "link"]
+    }
+  ],
+  "adapters": [
+    {
+      "id": "legacy-cta-to-button",
+      "targetComponentId": "external-button",
+      "sourceKeys": ["legacy.cta"],
+      "semantics": ["primary-action"],
+      "propMap": { "tone": "variant" },
+      "defaults": { "href": "#start" },
+      "enumMap": { "tone": { "hot": "primary", "quiet": "secondary" } }
+    }
+  ],
+  "recipes": [
+    {
+      "id": "feature-with-cta",
+      "displayName": "Feature card with action",
+      "semantics": ["feature-with-cta"],
+      "componentIds": ["external-card", "external-button"],
+      "requiredCapabilities": ["content", "action"]
     }
   ]
 }

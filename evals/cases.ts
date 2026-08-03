@@ -12,6 +12,7 @@ const degradedPrimaryAction = degradedInput.root.children[0]?.children?.find(
 )
 if (degradedPrimaryAction) {
   degradedPrimaryAction.componentKey = 'unknown.button'
+  degradedPrimaryAction.semantic = 'unknown-widget'
 }
 
 const malformedInput: unknown = {
@@ -56,14 +57,22 @@ export const fixedEvalCases: EvalCase[] = [
     expected: {
       generationSuccess: true,
       expectedMatches: {
+        'cta-section': 'section-cta',
+        'feature-grid': 'section-feature-grid',
         'hero-primary-action': 'external-button',
         'hero-secondary-action': 'external-button',
-        'hero-product-preview': 'external-product-preview'
+        'hero-product-preview': 'external-product-preview',
+        'logo-cloud': 'section-logo-cloud',
+        testimonial: 'section-testimonial'
       },
       expectedStrategies: {
+        'cta-section': 'exact-component',
+        'feature-grid': 'exact-component',
         'hero-primary-action': 'exact-component',
         'hero-secondary-action': 'exact-component',
-        'hero-product-preview': 'exact-component'
+        'hero-product-preview': 'exact-component',
+        'logo-cloud': 'exact-component',
+        testimonial: 'exact-component'
       },
       expectedDiagnostics: []
     }
@@ -113,13 +122,21 @@ export const fixedEvalCases: EvalCase[] = [
     expected: {
       generationSuccess: true,
       expectedMatches: {
+        'cta-section': 'section-cta',
+        'feature-grid': 'section-feature-grid',
         'hero-secondary-action': 'external-button',
-        'hero-product-preview': 'external-product-preview'
+        'hero-product-preview': 'external-product-preview',
+        'logo-cloud': 'section-logo-cloud',
+        testimonial: 'section-testimonial'
       },
       expectedStrategies: {
+        'cta-section': 'exact-component',
+        'feature-grid': 'exact-component',
         'hero-primary-action': 'manual-review',
         'hero-secondary-action': 'exact-component',
-        'hero-product-preview': 'exact-component'
+        'hero-product-preview': 'exact-component',
+        'logo-cloud': 'exact-component',
+        testimonial: 'exact-component'
       },
       expectedDiagnostics: ['COMPONENT_MANUAL_REVIEW']
     }
