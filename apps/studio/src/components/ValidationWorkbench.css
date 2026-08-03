@@ -1,0 +1,132 @@
+.validationWorkbench {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 50;
+  width: min(440px, calc(100vw - 36px));
+  max-height: min(76vh, 760px);
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid #2b3951;
+  border-radius: 18px;
+  background: color-mix(in srgb, #0b1220 96%, transparent);
+  box-shadow: 0 24px 80px #0009;
+  color: #edf3ff;
+  backdrop-filter: blur(18px);
+}
+
+.validationWorkbench header,
+.validationExports,
+.validationConfirmation,
+.validationChecks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.validationWorkbench header {
+  justify-content: space-between;
+}
+
+.validationWorkbench header div,
+.validationChecks span {
+  display: grid;
+  gap: 3px;
+}
+
+.validationWorkbench small,
+.validationWorkbench__message,
+.validationConfirmation,
+.validationChecks span,
+.isolatedPreview summary {
+  color: #9ba7bd;
+}
+
+.validationWorkbench button {
+  border: 1px solid #405273;
+  border-radius: 10px;
+  padding: 9px 12px;
+  background: #172238;
+  color: inherit;
+  cursor: pointer;
+}
+
+.validationWorkbench button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.validationWorkbench__message {
+  margin: 12px 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.validationChecks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.validationChecks li {
+  justify-content: space-between;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: #111a2b;
+  font-size: 0.75rem;
+}
+
+.validationChecks li[data-status='passed'] strong {
+  color: #76e6a8;
+}
+
+.validationChecks li[data-status='failed'] strong,
+.validationWorkbench__error {
+  color: #ff8a9b;
+}
+
+.validationChecks li[data-status='skipped'] strong {
+  color: #ffd37a;
+}
+
+.validationConfirmation {
+  margin: 10px 0;
+  font-size: 0.78rem;
+}
+
+.validationExports {
+  margin-top: 10px;
+}
+
+.isolatedPreview {
+  margin-top: 12px;
+}
+
+.isolatedPreview summary {
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+
+.isolatedPreview iframe {
+  width: 100%;
+  height: 300px;
+  margin-top: 10px;
+  border: 1px solid #33425d;
+  border-radius: 12px;
+  background: #070b14;
+}
+
+@media (max-width: 720px) {
+  .validationWorkbench {
+    right: 8px;
+    bottom: 8px;
+    width: calc(100vw - 16px);
+  }
+
+  .validationChecks {
+    grid-template-columns: 1fr;
+  }
+}

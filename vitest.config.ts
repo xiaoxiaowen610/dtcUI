@@ -31,8 +31,10 @@ export default defineConfig({
       reportsDirectory: './coverage',
       include: [
         'packages/*/src/index.ts',
-        'apps/engine/src/{pipeline,server}.ts',
+        'packages/validation-export/src/{types,harness,jobs,bridge,export}.ts',
+        'apps/engine/src/{pipeline,server,preview}.ts',
         'apps/studio/src/{App,services/engine,stores/workspace}.{ts,tsx}',
+        'apps/studio/src/components/ValidationWorkbench.tsx',
         'scripts/lib/evaluation.ts'
       ],
       exclude: ['packages/example-external-ui/**'],
