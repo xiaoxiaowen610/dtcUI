@@ -130,9 +130,8 @@ describe('Batch 05 Studio validation workbench', () => {
     render(<ValidationWorkbench />)
     announceGeneration()
     await user.click(screen.getByRole('button', { name: 'Validate generation' }))
-    const frame = (await screen.findByTitle(
-      'Isolated generated preview'
-    )) as HTMLIFrameElement
+    await screen.findByText('Validation passed. Export gates are available.')
+    const frame = screen.getByTitle('Isolated generated preview') as HTMLIFrameElement
 
     window.dispatchEvent(
       new MessageEvent('message', {
