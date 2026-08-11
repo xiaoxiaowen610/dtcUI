@@ -34,9 +34,11 @@ interface ComposerStoreState {
   past: ComposerHistoryEntry[]
   future: ComposerHistoryEntry[]
   lastError: string | undefined
+  rollbackData: Data | undefined
   selectNode: (nodeId: string | undefined) => void
   setDevice: (device: ComposerDevice) => void
   toggleExpanded: (nodeId: string) => void
+  clearRollback: () => void
   syncFromPuck: (data: Data) => PuckSyncResult
   applyOperation: (operation: ComposerOperation) => void
   undo: () => ComposerPage | undefined
@@ -63,6 +65,7 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
   past: [],
   future: [],
   lastError: undefined,
+  rollbackData: undefined,
 
   selectNode: (selectedNodeId) => set({ selectedNodeId }),
   setDevice: (device) => set({ device }),
@@ -72,6 +75,7 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
         ? state.expandedNodeIds.filter((candidate) => candidate !== nodeId)
         : [...state.expandedNodeIds, nodeId]
     })),
+  clearRollback: () => set({ rollbackData: undefined }),
 
   syncFromPuck: (data) => {
     const state = get()
@@ -105,16 +109,22 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
         selectedNodeId: nextSelectedNode(after, state.selectedNodeId),
         past: [...state.past, { before, after, operations }],
         future: [],
-        lastError: undefined
+        lastError: undefined,
+        rollbackData: undefined
       })
       return { ok: true, operations }
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown Puck synchronization error.'
-      set({ lastError: message, operationSequence: sequence })
+      const rollback = composerPageToPuckData(before)
+      set({
+        lastError: message,
+        operationSequence: sequence,
+        rollbackData: rollback
+      })
       return {
         ok: false,
         operations: [],
-        rollback: composerPageToPuckData(before),
+        rollback,
         error: message
       }
     }
@@ -130,7 +140,8 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
       selectedNodeId: nextSelectedNode(after, state.selectedNodeId),
       past: [...state.past, { before, after, operations: [operation] }],
       future: [],
-      lastError: undefined
+      lastError: undefined,
+      rollbackData: undefined
     })
   },
 
@@ -144,7 +155,8 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
       past,
       future: [entry, ...state.future],
       selectedNodeId: nextSelectedNode(entry.before, state.selectedNodeId),
-      lastError: undefined
+      lastError: undefined,
+      rollbackData: undefined
     })
     return entry.before
   },
@@ -158,7 +170,8 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
       past: [...state.past, entry],
       future,
       selectedNodeId: nextSelectedNode(entry.after, state.selectedNodeId),
-      lastError: undefined
+      lastError: undefined,
+      rollbackData: undefined
     })
     return entry.after
   },
@@ -174,7 +187,8 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
       operationSequence: 0,
       past: [],
       future: [],
-      lastError: undefined
+      lastError: undefined,
+      rollbackData: undefined
     })
     return page
   }
