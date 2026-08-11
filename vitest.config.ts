@@ -4,9 +4,13 @@ import { defineConfig } from 'vitest/config'
 const packageAlias = (name: string) =>
   fileURLToPath(new URL(`./packages/${name}/src/index.ts`, import.meta.url))
 
+const packageFileAlias = (name: string, file: string) =>
+  fileURLToPath(new URL(`./packages/${name}/src/${file}`, import.meta.url))
+
 export default defineConfig({
   resolve: {
     alias: {
+      '@forge-ui/contracts/composer': packageFileAlias('contracts', 'composer.ts'),
       '@forge-ui/contracts': packageAlias('contracts'),
       '@forge-ui/shared': packageAlias('shared'),
       '@forge-ui/design-ir': packageAlias('design-ir'),
