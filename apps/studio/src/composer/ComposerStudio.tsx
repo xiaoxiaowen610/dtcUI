@@ -1,11 +1,5 @@
 import { Fragment, useEffect, useMemo } from 'react'
-import {
-  Puck,
-  createUsePuck,
-  useGetPuck,
-  type Data,
-  type ItemSelector
-} from '@puckeditor/core'
+import { Puck, createUsePuck, useGetPuck, type Data } from '@puckeditor/core'
 import type { ComposerNode } from '@forge-ui/contracts/composer'
 import { forgePuckConfig } from './puckConfig'
 import { composerPageToPuckData } from './puckAdapter'
@@ -149,7 +143,7 @@ function LayerNode({ node, depth }: { node: ComposerNode; depth: number }) {
     if (selector) {
       getPuck().dispatch({
         type: 'setUi',
-        ui: { itemSelector: selector as ItemSelector }
+        ui: { itemSelector: selector }
       })
     }
   }
