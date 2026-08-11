@@ -16,6 +16,7 @@
     "noEmit": true,
     "paths": {
       "@forge-ui/contracts": ["./packages/contracts/src/index.ts"],
+      "@forge-ui/contracts/composer": ["./packages/contracts/src/composer.ts"],
       "@forge-ui/shared": ["./packages/shared/src/index.ts"],
       "@forge-ui/design-ir": ["./packages/design-ir/src/index.ts"],
       "@forge-ui/component-registry": ["./packages/component-registry/src/index.ts"],
