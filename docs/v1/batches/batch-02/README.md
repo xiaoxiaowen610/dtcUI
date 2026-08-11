@@ -33,9 +33,9 @@ Puck interaction
                 v
           ComposerPage
                 |
-       +--------+---------+
-       |        |         |
-     Layers   Canvas   Future AI/Codegen
+       +--------+----------+-------------+
+       |        |          |             |
+     Layers   Canvas   IndexedDB    Future AI/Codegen
 ```
 
 `ComposerPage` remains the only durable page document. Puck state is transient editor state.
@@ -53,6 +53,8 @@ Puck interaction
 - Puck Fields used as the first Inspector renderer;
 - Mobile / Tablet / Desktop Canvas width controls;
 - snapshot-backed Undo / Redo with operation-first mutations;
+- Cmd/Ctrl+Z and Cmd/Ctrl+Shift+Z shortcuts outside editable fields;
+- IndexedDB last-project auto-save and validated restore;
 - starter 618 commerce page for Canvas verification;
 - preservation of the legacy Studio.
 
@@ -62,7 +64,7 @@ Not completed in this batch:
 
 - production Forge Design System and the final 14 Blocks;
 - drag reordering inside the custom Forge Layers panel;
-- IndexedDB project persistence;
+- multi-project IndexedDB browsing/version migration UI;
 - AI Generate / AI Edit;
 - new Composer React Codegen;
 - multi-select, arbitrary resize, rotation or absolute positioning;
@@ -74,12 +76,16 @@ Puck-specific names such as `HeroBlock`, `ProductGrid` and `ComponentData` are a
 
 Invalid interactions never bypass Forge validation. The adapter asks Forge to apply the resulting operations; if the target document cannot be represented legally, Puck is reset to the last valid Forge document.
 
+Persisted pages are parsed through the versioned Composer Page Schema and checked against the active Registry before they can replace the in-memory document.
+
 ## Review checklist
 
 - root rejects leaf components such as ProductCard;
 - ProductGrid only accepts ProductCard in its `items` Slot;
 - moving a node keeps its stable ID;
 - Page Schema is unchanged by selection/device/panel state;
+- refresh restores the last valid Composer document from IndexedDB;
+- Undo/Redo works from buttons and keyboard shortcuts;
 - old Studio still loads normally;
 - `/composer` renders the new Studio;
 - unit tests, typecheck, build and the repository-wide `pnpm check` pass.
