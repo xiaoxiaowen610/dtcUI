@@ -3,6 +3,7 @@ import { Puck, createUsePuck, useGetPuck, type Data } from '@puckeditor/core'
 import type { ComposerNode } from '@forge-ui/contracts/composer'
 import { forgePuckConfig } from './puckConfig'
 import { composerPageToPuckData } from './puckAdapter'
+import { createBrowserComposerPersistence } from './persistence'
 import { useComposerStore, type ComposerDevice } from './store'
 
 const usePuck = createUsePuck()
@@ -41,6 +42,79 @@ function RollbackBridge() {
     dispatchDocument(getPuck, rollbackData)
     clearRollback()
   }, [clearRollback, getPuck, rollbackData])
+
+  return null
+}
+
+function PersistenceBridge() {
+  const getPuck = useGetPuck()
+
+  useEffect(() => {
+    const persistence = createBrowserComposerPersistence()
+    let disposed = false
+    let unsubscribe = () => {}
+    let saveTimer: number | undefined
+
+    const startSaving = () => {
+      let previousPage = useComposerStore.getState().page
+      unsubscribe = useComposerStore.subscribe((state) => {
+        if (state.page === previousPage) return
+        previousPage = state.page
+        if (saveTimer !== undefined) window.clearTimeout(saveTimer)
+        saveTimer = window.setTimeout(() => {
+          void persistence.save(state.page).catch(() => undefined)
+        }, 300)
+      })
+    }
+
+    void persistence
+      .load()
+      .then((persistedPage) => {
+        if (disposed) return
+        if (persistedPage) {
+          const page = useComposerStore.getState().hydrate(persistedPage)
+          dispatchDocument(getPuck, composerPageToPuckData(page))
+        }
+        startSaving()
+      })
+      .catch(() => {
+        if (!disposed) startSaving()
+      })
+
+    return () => {
+      disposed = true
+      unsubscribe()
+      if (saveTimer !== undefined) window.clearTimeout(saveTimer)
+    }
+  }, [getPuck])
+
+  return null
+}
+
+function KeyboardShortcutBridge() {
+  const getPuck = useGetPuck()
+
+  useEffect(() => {
+    const listener = (event: KeyboardEvent) => {
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'z') return
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')
+      ) {
+        return
+      }
+
+      const state = useComposerStore.getState()
+      const page = event.shiftKey ? state.redo() : state.undo()
+      if (!page) return
+      event.preventDefault()
+      dispatchDocument(getPuck, composerPageToPuckData(page))
+    }
+
+    window.addEventListener('keydown', listener)
+    return () => window.removeEventListener('keydown', listener)
+  }, [getPuck])
 
   return null
 }
@@ -266,6 +340,8 @@ function ComposerShell() {
       </div>
       <SelectionBridge />
       <RollbackBridge />
+      <PersistenceBridge />
+      <KeyboardShortcutBridge />
     </div>
   )
 }
