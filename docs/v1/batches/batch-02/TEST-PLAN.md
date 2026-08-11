@@ -28,6 +28,14 @@
 - B02-STORE-002 invalid root insertion keeps Forge Page Schema unchanged and requests Puck rollback.
 - B02-STORE-003 Undo / Redo restores document snapshots.
 - B02-STORE-004 Reset restores the deterministic starter page.
+- B02-STORE-005 persisted compatible pages hydrate without adding editor history.
+- B02-STORE-006 persisted pages that violate Registry rules are rejected.
+
+### Persistence snapshots
+
+- B02-PERSIST-001 versioned snapshot round-trip preserves Page Schema.
+- B02-PERSIST-002 unsupported snapshot versions are rejected.
+- B02-PERSIST-003 invalid persisted Page Schema is rejected.
 
 ## Repository gates
 
@@ -51,9 +59,10 @@ pnpm check
 6. Attempt to drag an invalid leaf component into Page Root and confirm the document rolls back with a visible error.
 7. Select nested ProductCard from Forge Layers and confirm Canvas/Inspector selection follows.
 8. Switch Mobile / Tablet / Desktop widths.
-9. Undo and Redo a content edit and reorder.
-10. Open `/` and confirm the legacy D2C Studio remains available.
+9. Undo and Redo a content edit and reorder from both toolbar and Cmd/Ctrl+Z shortcuts.
+10. Refresh `/composer` and confirm the last valid page is restored from IndexedDB.
+11. Open `/` and confirm the legacy D2C Studio remains available.
 
 ## Deferred tests
 
-Visual regression, real browser drag gestures, IndexedDB recovery and large-document performance are deferred until the Canvas UI stabilizes and Batch 01 production Blocks exist.
+Visual regression, Playwright-level real browser drag gestures, IndexedDB upgrade/migration behavior and large-document performance are deferred until the Canvas UI stabilizes and Batch 01 production Blocks exist.
