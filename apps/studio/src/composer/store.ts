@@ -2,7 +2,11 @@ import { create } from 'zustand'
 import type { Data } from '@puckeditor/core'
 import type { ComposerOperation, ComposerPage, ComposerRegistry } from '@forge-ui/contracts/composer'
 import { starterComposerPage, starterComposerRegistry } from './catalog'
-import { applyComposerOperation, findComposerNode } from './model'
+import {
+  applyComposerOperation,
+  findComposerNode,
+  validateComposerPageAgainstRegistry
+} from './model'
 import {
   composerPageToPuckData,
   diffComposerPages,
@@ -39,6 +43,7 @@ interface ComposerStoreState {
   setDevice: (device: ComposerDevice) => void
   toggleExpanded: (nodeId: string) => void
   clearRollback: () => void
+  hydrate: (page: ComposerPage) => ComposerPage
   syncFromPuck: (data: Data) => PuckSyncResult
   applyOperation: (operation: ComposerOperation) => void
   undo: () => ComposerPage | undefined
@@ -53,6 +58,13 @@ function sameDocument(left: ComposerPage, right: ComposerPage) {
 function nextSelectedNode(page: ComposerPage, selectedNodeId: string | undefined) {
   if (selectedNodeId && findComposerNode(page.root, selectedNodeId)) return selectedNodeId
   return page.root.children?.[0]?.id
+}
+
+function assertRegistryCompatible(page: ComposerPage, registry: ComposerRegistry) {
+  const issues = validateComposerPageAgainstRegistry(page, registry)
+  if (issues.length > 0) {
+    throw new Error(`Persisted Composer page is incompatible with the active Registry: ${issues.join(' ')}`)
+  }
 }
 
 export const useComposerStore = create<ComposerStoreState>((set, get) => ({
@@ -76,6 +88,22 @@ export const useComposerStore = create<ComposerStoreState>((set, get) => ({
         : [...state.expandedNodeIds, nodeId]
     })),
   clearRollback: () => set({ rollbackData: undefined }),
+
+  hydrate: (page) => {
+    assertRegistryCompatible(page, get().registry)
+    const hydrated = structuredClone(page)
+    set({
+      page: hydrated,
+      selectedNodeId: hydrated.root.children?.[0]?.id,
+      expandedNodeIds: [hydrated.root.id],
+      operationSequence: 0,
+      past: [],
+      future: [],
+      lastError: undefined,
+      rollbackData: undefined
+    })
+    return hydrated
+  },
 
   syncFromPuck: (data) => {
     const state = get()
