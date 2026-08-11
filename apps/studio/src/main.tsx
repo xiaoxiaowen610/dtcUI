@@ -1,12 +1,11 @@
-import { StrictMode } from 'react'
+import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import '@puckeditor/core/puck.css'
 import App from './App'
 import { ValidationWorkbench } from './components/ValidationWorkbench'
-import { ComposerStudio } from './composer/ComposerStudio'
 import './styles.css'
-import './composer/composer.css'
+
+const ComposerStudio = lazy(() => import('./composer/ComposerStudio'))
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Missing #root element')
@@ -26,7 +25,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       {composerMode ? (
-        <ComposerStudio />
+        <Suspense fallback={<div className="composerRouteLoading">Loading Forge Composer…</div>}>
+          <ComposerStudio />
+        </Suspense>
       ) : (
         <>
           <App />
