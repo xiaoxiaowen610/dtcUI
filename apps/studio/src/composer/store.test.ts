@@ -83,4 +83,35 @@ describe('composer store', () => {
     expect(useComposerStore.getState().past).toEqual([])
     expect(useComposerStore.getState().future).toEqual([])
   })
+
+  it('B02-STORE-005 hydrates a compatible persisted page without creating history', () => {
+    const persisted = structuredClone(useComposerStore.getState().page)
+    persisted.name = '恢复后的活动页'
+    persisted.root.children![0]!.props = {
+      ...persisted.root.children![0]!.props,
+      title: '从 IndexedDB 恢复'
+    }
+
+    const hydrated = useComposerStore.getState().hydrate(persisted)
+    const state = useComposerStore.getState()
+
+    expect(hydrated.name).toBe('恢复后的活动页')
+    expect(state.page.root.children?.[0]?.props?.title).toBe('从 IndexedDB 恢复')
+    expect(state.past).toEqual([])
+    expect(state.future).toEqual([])
+  })
+
+  it('B02-STORE-006 rejects persisted pages that violate the active Registry', () => {
+    const persisted = structuredClone(useComposerStore.getState().page)
+    persisted.root.children!.push({
+      id: 'invalid-persisted-product',
+      type: 'product-card',
+      category: 'component',
+      props: { title: '非法根节点' }
+    })
+
+    expect(() => useComposerStore.getState().hydrate(persisted)).toThrowError(
+      /incompatible with the active Registry/
+    )
+  })
 })
