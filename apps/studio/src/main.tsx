@@ -5,7 +5,7 @@ import App from './App'
 import { ValidationWorkbench } from './components/ValidationWorkbench'
 import './styles.css'
 
-const ComposerStudio = lazy(() => import('./composer/ComposerStudio'))
+const ComposerStudio = lazy(() => import('./composer/index'))
 
 const rootElement = document.getElementById('root')
 if (!rootElement) throw new Error('Missing #root element')
