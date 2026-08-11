@@ -10,7 +10,13 @@ import {
   validateDrop
 } from './model'
 
-function operation(value: Omit<ComposerOperation, 'operationId' | 'actor'>): ComposerOperation {
+type OperationInput = ComposerOperation extends infer Operation
+  ? Operation extends ComposerOperation
+    ? Omit<Operation, 'operationId' | 'actor'>
+    : never
+  : never
+
+function operation(value: OperationInput): ComposerOperation {
   return {
     ...value,
     operationId: `test-${value.type}`,
