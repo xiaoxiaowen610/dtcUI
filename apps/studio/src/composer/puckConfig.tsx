@@ -15,18 +15,18 @@ type ForgePuckProps = {
   }
   Section: {
     title: string
-    content: Slot
+    content?: Slot
   }
   Grid: {
     columns: number
-    items: Slot
+    items?: Slot
   }
   ProductGrid: {
     title: string
     subtitle: string
     columns: number
     variant: 'cards' | 'festival' | 'minimal'
-    items: Slot
+    items?: Slot
   }
   ProductCard: {
     title: string
@@ -182,7 +182,11 @@ export const forgePuckConfig: Config<
           <header className="forgeSection__header">
             <h2>{title}</h2>
           </header>
-          <Content minEmptyHeight={120} />
+          {Content ? (
+            <Content minEmptyHeight={120} />
+          ) : (
+            <div className="forgeEmptySlot">拖入文本或 Grid</div>
+          )}
         </section>
       )
     },
@@ -200,14 +204,17 @@ export const forgePuckConfig: Config<
       defaultProps: {
         columns: 3
       },
-      render: ({ columns, items: Items }) => (
-        <Items
-          className="forgeGenericGrid"
-          collisionAxis="dynamic"
-          minEmptyHeight={128}
-          style={{ gridTemplateColumns: `repeat(${Math.max(1, Math.min(4, columns || 1))}, 1fr)` }}
-        />
-      )
+      render: ({ columns, items: Items }) =>
+        Items ? (
+          <Items
+            className="forgeGenericGrid"
+            collisionAxis="dynamic"
+            minEmptyHeight={128}
+            style={{ gridTemplateColumns: `repeat(${Math.max(1, Math.min(4, columns || 1))}, 1fr)` }}
+          />
+        ) : (
+          <div className="forgeEmptySlot">拖入内容组件</div>
+        )
     },
 
     ProductGrid: {
@@ -257,12 +264,16 @@ export const forgePuckConfig: Config<
             </div>
             <strong>精选</strong>
           </header>
-          <Items
-            className="forgeProductGrid__items"
-            collisionAxis="dynamic"
-            minEmptyHeight={180}
-            style={{ gridTemplateColumns: `repeat(${Math.max(2, Math.min(4, columns || 2))}, 1fr)` }}
-          />
+          {Items ? (
+            <Items
+              className="forgeProductGrid__items"
+              collisionAxis="dynamic"
+              minEmptyHeight={180}
+              style={{ gridTemplateColumns: `repeat(${Math.max(2, Math.min(4, columns || 2))}, 1fr)` }}
+            />
+          ) : (
+            <div className="forgeEmptySlot">拖入商品卡</div>
+          )}
         </section>
       )
     },
